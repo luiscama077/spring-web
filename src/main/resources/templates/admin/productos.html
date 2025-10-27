@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen">
+    
+    <!-- Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar-admin}"></div>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='productos')}"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="max-w-7xl mx-auto">
+                
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white">Productos</h2>
+                        <p class="text-gray-400 mt-1">Gestión del catálogo de productos</p>
+                    </div>
+                    <a href="/admin/productos/nuevo" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
+                        ➕ Nuevo Producto
+                    </a>
+                </div>
+
+                <!-- Mensajes -->
+                <div th:if="${mensaje}" 
+                     th:classappend="${tipo == 'success' ? 'bg-green-900 border-green-700 text-green-200' : 'bg-red-900 border-red-700 text-red-200'}"
+                     class="border px-4 py-3 rounded mb-6">
+                    <p th:text="${mensaje}">Mensaje</p>
+                </div>
+
+                <!-- Barra de búsqueda y filtros -->
+                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-6">
+                    <div class="flex flex-wrap gap-4">
+                        <form action="/admin/productos/buscar" method="get" class="flex-1">
+                            <div class="flex">
+                                <input type="text" 
+                                       name="termino" 
+                                       placeholder="Buscar producto..."
+                                       class="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-l-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-r-lg transition">
+                                    🔍 Buscar
+                                </button>
+                            </div>
+                        </form>
+                        <a href="/admin/productos/bajo-stock" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-lg transition">
+                            ⚠️ Bajo Stock
+                        </a>
+                        <a href="/admin/productos" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition">
+                            🔄 Ver Todos
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tabla de Productos -->
+                <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-900">
+                                <tr class="text-left text-gray-400">
+                                    <th class="px-6 py-4">ID</th>
+                                    <th class="px-6 py-4">Nombre</th>
+                                    <th class="px-6 py-4">Categoría</th>
+                                    <th class="px-6 py-4">Precio</th>
+                                    <th class="px-6 py-4">Stock</th>
+                                    <th class="px-6 py-4">Talla</th>
+                                    <th class="px-6 py-4">Color</th>
+                                    <th class="px-6 py-4">Estado</th>
+                                    <th class="px-6 py-4">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-300">
+                                <tr th:if="${productos.empty}">
+                                    <td colspan="9" class="px-6 py-8 text-center text-gray-500">
+                                        No hay productos registrados
+                                    </td>
+                                </tr>
+                                <tr th:each="producto : ${productos}" class="border-t border-gray-700 hover:bg-gray-700">
+                                    <td class="px-6 py-4" th:text="${producto.id}">#1</td>
+                                    <td class="px-6 py-4">
+                                        <div>
+                                            <p class="font-semibold text-white" th:text="${producto.nombre}">Producto</p>
+                                            <p class="text-sm text-gray-400" th:text="${producto.marca}">Marca</p>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4" th:text="${producto.categoria.nombre}">Categoría</td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-green-400 font-semibold">
+                                            S/ <span th:text="${#numbers.formatDecimal(producto.precio, 1, 2)}">0.00</span>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span th:classappend="${producto.stock < 10 ? 'bg-red-900 text-red-200' : 'bg-green-900 text-green-200'}"
+                                              class="px-3 py-1 rounded text-sm font-semibold" 
+                                              th:text="${producto.stock}">0</span>
+                                    </td>
+                                    <td class="px-6 py-4" th:text="${producto.talla}">M</td>
+                                    <td class="px-6 py-4" th:text="${producto.color}">Negro</td>
+                                    <td class="px-6 py-4">
+                                        <span th:if="${producto.activo}" class="px-3 py-1 bg-green-900 text-green-200 rounded text-sm">
+                                            Activo
+                                        </span>
+                                        <span th:unless="${producto.activo}" class="px-3 py-1 bg-gray-700 text-gray-400 rounded text-sm">
+                                            Inactivo
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex space-x-2">
+                                            <a th:href="@{/admin/productos/editar/{id}(id=${producto.id})}" 
+                                               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition">
+                                                ✏️ Editar
+                                            </a>
+                                            <a th:href="@{/admin/productos/toggle/{id}(id=${producto.id})}" 
+                                               class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
+                                                🔄 Cambiar estado
+                                            </a>
+                                            <a th:href="@{/admin/productos/eliminar/{id}(id=${producto.id})}" 
+                                               onclick="return confirm('¿Estás seguro de eliminar este producto?')"
+                                               class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition">
+                                                🗑️ Eliminar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen">
+    
+    <!-- Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar-admin}"></div>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='clientes')}"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="max-w-7xl mx-auto">
+                
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white">Clientes</h2>
+                        <p class="text-gray-400 mt-1">Gestión de clientes de la tienda</p>
+                    </div>
+                    <a href="/admin/clientes/nuevo" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
+                        ➕ Nuevo Cliente
+                    </a>
+                </div>
+
+                <!-- Barra de búsqueda y filtros -->
+                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-6">
+                    <div class="flex flex-wrap gap-4">
+                        <form action="/admin/clientes/buscar" method="get" class="flex-1">
+                            <div class="flex">
+                                <input type="text" 
+                                       name="termino" 
+                                       placeholder="Buscar cliente por nombre..."
+                                       th:value="${termino}"
+                                       class="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-l-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-r-lg transition">
+                                    🔍 Buscar
+                                </button>
+                            </div>
+                        </form>
+                        <a href="/admin/clientes/frecuentes" 
+                           th:class="${frecuentes != null && frecuentes ? 'bg-blue-600 text-white px-6 py-2 rounded-lg transition' : 'bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-lg transition'}">
+                            ⭐ Clientes Frecuentes
+                        </a>
+                        <a href="/admin/clientes/top-compras" 
+                           th:class="${topCompras != null && topCompras ? 'bg-blue-600 text-white px-6 py-2 rounded-lg transition' : 'bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition'}">
+                            🏆 Top Compras
+                        </a>
+                        <a href="/admin/clientes/top-pedidos" 
+                           th:class="${topPedidos != null && topPedidos ? 'bg-blue-600 text-white px-6 py-2 rounded-lg transition' : 'bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition'}">
+                            📦 Top Pedidos
+                        </a>
+                        <a href="/admin/clientes" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition">
+                            🔄 Ver Todos
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Estadísticas Rápidas -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <p class="text-gray-400 text-sm mb-1">Total Clientes</p>
+                        <p class="text-3xl font-bold text-white" th:text="${#lists.size(clientes)}">0</p>
+                    </div>
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <p class="text-gray-400 text-sm mb-1">Clientes Frecuentes</p>
+                        <p class="text-3xl font-bold text-yellow-500">
+                            <span th:text="${#aggregates.sum(clientes.![clienteFrecuente ? 1 : 0])}">0</span>
+                        </p>
+                    </div>
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <p class="text-gray-400 text-sm mb-1">Total Compras</p>
+                        <p class="text-2xl font-bold text-green-400">
+                            S/ <span th:text="${#aggregates.sum(clientes.![totalCompras]) != null ? #numbers.formatDecimal(#aggregates.sum(clientes.![totalCompras]), 1, 2) : '0.00'}">0.00</span>
+                        </p>
+                    </div>
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <p class="text-gray-400 text-sm mb-1">Total Pedidos</p>
+                        <p class="text-3xl font-bold text-blue-400" th:text="${#aggregates.sum(clientes.![numeroPedidos])}">0</p>
+                    </div>
+                </div>
+
+                <!-- Tabla de Clientes -->
+                <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-900">
+                                <tr class="text-left text-gray-400">
+                                    <th class="px-6 py-4">ID</th>
+                                    <th class="px-6 py-4">Nombre Completo</th>
+                                    <th class="px-6 py-4">Usuario</th>
+                                    <th class="px-6 py-4">Email</th>
+                                    <th class="px-6 py-4">Teléfono</th>
+                                    <th class="px-6 py-4">Total Compras</th>
+                                    <th class="px-6 py-4">Nº Pedidos</th>
+                                    <th class="px-6 py-4">Estado</th>
+                                    <th class="px-6 py-4">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-300">
+                                <tr th:if="${clientes.empty}">
+                                    <td colspan="9" class="px-6 py-8 text-center text-gray-500">
+                                        No hay clientes registrados
+                                    </td>
+                                </tr>
+                                <tr th:each="cliente : ${clientes}" class="border-t border-gray-700 hover:bg-gray-700">
+                                    <td class="px-6 py-4" th:text="${cliente.id}">#1</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div>
+                                                <p class="font-semibold text-white" th:text="${cliente.nombreCompleto}">Cliente</p>
+                                                <p class="text-sm text-gray-400" th:if="${cliente.clienteFrecuente}">⭐ Cliente Frecuente</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4" th:text="${cliente.usuario.username}">usuario</td>
+                                    <td class="px-6 py-4" th:text="${cliente.usuario.email}">email@mail.com</td>
+                                    <td class="px-6 py-4" th:text="${cliente.telefono}">999999999</td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-green-400 font-semibold">
+                                            S/ <span th:text="${#numbers.formatDecimal(cliente.totalCompras, 1, 2)}">0.00</span>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-3 py-1 bg-blue-900 text-blue-200 rounded text-sm font-semibold" th:text="${cliente.numeroPedidos}">0</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span th:if="${cliente.usuario.activo}" class="px-3 py-1 bg-green-900 text-green-200 rounded text-sm">
+                                            Activo
+                                        </span>
+                                        <span th:unless="${cliente.usuario.activo}" class="px-3 py-1 bg-gray-700 text-gray-400 rounded text-sm">
+                                            Inactivo
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex space-x-2">
+                                            <a th:href="@{/admin/clientes/detalle/{id}(id=${cliente.id})}" 
+                                               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition">
+                                                👁️ Ver
+                                            </a>
+                                            <a th:href="@{/admin/clientes/editar/{id}(id=${cliente.id})}" 
+                                               class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition">
+                                                ✏️ Editar
+                                            </a>
+                                            <a th:href="@{/admin/clientes/eliminar/{id}(id=${cliente.id})}" 
+                                               onclick="return confirm('¿Estás seguro de eliminar este cliente? Se eliminarán también sus pedidos.')"
+                                               class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition">
+                                                🗑️
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

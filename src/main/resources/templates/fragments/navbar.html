@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<body>
+    <!-- Navbar Admin -->
+    <nav th:fragment="navbar-admin" class="bg-gray-800 border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-white">EstiloUnico</h1>
+                    <span class="ml-4 px-3 py-1 bg-blue-600 text-white text-sm rounded-full">Admin</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-300">Bienvenido, <span th:text="${session.username}">Admin</span></span>
+                    <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                        Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Admin -->
+    <aside th:fragment="sidebar-admin" class="w-64 bg-gray-800 min-h-screen border-r border-gray-700">
+        <nav class="mt-6">
+            <a href="/admin/dashboard" 
+               th:classappend="${seccion == 'dashboard' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+               class="flex items-center px-6 py-3 transition">
+                <span class="mr-3">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="/admin/categorias" 
+               th:classappend="${seccion == 'categorias' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+               class="flex items-center px-6 py-3 transition">
+                <span class="mr-3">📦</span>
+                <span>Categorías</span>
+            </a>
+            <a href="/admin/productos" 
+               th:classappend="${seccion == 'productos' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+               class="flex items-center px-6 py-3 transition">
+                <span class="mr-3">🏷️</span>
+                <span>Productos</span>
+            </a>
+            <a href="/admin/empleados" 
+               th:classappend="${seccion == 'empleados' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+               class="flex items-center px-6 py-3 transition">
+                <span class="mr-3">👨‍💼</span>
+                <span>Empleados</span>
+            </a>
+            <a href="/admin/clientes" 
+               th:classappend="${seccion == 'clientes' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+               class="flex items-center px-6 py-3 transition">
+                <span class="mr-3">👥</span>
+                <span>Clientes</span>
+            </a>
+            <a href="/admin/pedidos" 
+               th:classappend="${seccion == 'pedidos' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+               class="flex items-center px-6 py-3 transition">
+                <span class="mr-3">📋</span>
+                <span>Pedidos</span>
+            </a>
+        </nav>
+    </aside>
+</body>
+</html>

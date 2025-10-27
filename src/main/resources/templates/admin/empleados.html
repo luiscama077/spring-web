@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen">
+    
+    <!-- Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar-admin}"></div>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='empleados')}"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="max-w-7xl mx-auto">
+                
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white">Empleados</h2>
+                        <p class="text-gray-400 mt-1">Gestión del personal de la empresa</p>
+                    </div>
+                    <a href="/admin/empleados/nuevo" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
+                        ➕ Nuevo Empleado
+                    </a>
+                </div>
+
+                <!-- Mensajes -->
+                <div th:if="${mensaje}" 
+                     th:classappend="${tipo == 'success' ? 'bg-green-900 border-green-700 text-green-200' : 'bg-red-900 border-red-700 text-red-200'}"
+                     class="border px-4 py-3 rounded mb-6">
+                    <p th:text="${mensaje}">Mensaje</p>
+                </div>
+
+                <!-- Barra de búsqueda y filtros -->
+                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-6">
+                    <div class="flex flex-wrap gap-4">
+                        <form action="/admin/empleados/buscar" method="get" class="flex-1">
+                            <div class="flex">
+                                <input type="text" 
+                                       name="termino" 
+                                       placeholder="Buscar empleado..."
+                                       class="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-l-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-r-lg transition">
+                                    🔍 Buscar
+                                </button>
+                            </div>
+                        </form>
+                        <a href="/admin/empleados" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition">
+                            🔄 Ver Todos
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tabla de Empleados -->
+                <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-900">
+                                <tr class="text-left text-gray-400">
+                                    <th class="px-6 py-4">ID</th>
+                                    <th class="px-6 py-4">Nombre Completo</th>
+                                    <th class="px-6 py-4">Usuario</th>
+                                    <th class="px-6 py-4">DNI</th>
+                                    <th class="px-6 py-4">Teléfono</th>
+                                    <th class="px-6 py-4">Cargo</th>
+                                    <th class="px-6 py-4">Fecha Contratación</th>
+                                    <th class="px-6 py-4">Estado</th>
+                                    <th class="px-6 py-4">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-300">
+                                <tr th:if="${empleados.empty}">
+                                    <td colspan="9" class="px-6 py-8 text-center text-gray-500">
+                                        No hay empleados registrados
+                                    </td>
+                                </tr>
+                                <tr th:each="empleado : ${empleados}" class="border-t border-gray-700 hover:bg-gray-700">
+                                    <td class="px-6 py-4" th:text="${empleado.id}">#1</td>
+                                    <td class="px-6 py-4">
+                                        <p class="font-semibold text-white" th:text="${empleado.nombreCompleto}">Empleado</p>
+                                    </td>
+                                    <td class="px-6 py-4" th:text="${empleado.usuario.username}">usuario</td>
+                                    <td class="px-6 py-4" th:text="${empleado.dni}">00000000</td>
+                                    <td class="px-6 py-4" th:text="${empleado.telefono}">999999999</td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-3 py-1 bg-blue-900 text-blue-200 rounded text-sm" th:text="${empleado.cargo}">Vendedor</span>
+                                    </td>
+                                    <td class="px-6 py-4" th:text="${#temporals.format(empleado.fechaContratacion, 'dd/MM/yyyy')}">01/01/2024</td>
+                                    <td class="px-6 py-4">
+                                        <span th:classappend="${empleado.estadoLaboral == T(com.estilounico.model.enums.EstadoLaboral).ACTIVO ? 'bg-green-900 text-green-200' : 
+                                                             (empleado.estadoLaboral == T(com.estilounico.model.enums.EstadoLaboral).VACACIONES ? 'bg-yellow-900 text-yellow-200' : 
+                                                             (empleado.estadoLaboral == T(com.estilounico.model.enums.EstadoLaboral).SUSPENDIDO ? 'bg-red-900 text-red-200' : 'bg-gray-700 text-gray-400'))}"
+                                              class="px-3 py-1 rounded text-sm font-semibold" 
+                                              th:text="${empleado.estadoLaboral}">ACTIVO</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex space-x-2">
+                                            <a th:href="@{/admin/empleados/editar/{id}(id=${empleado.id})}" 
+                                               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition">
+                                                ✏️ Editar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

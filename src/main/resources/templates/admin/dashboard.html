@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen">
+    
+    <!-- Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar-admin}"></div>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='dashboard')}"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="max-w-7xl mx-auto">
+                
+                <!-- Header -->
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-white">Dashboard</h2>
+                    <p class="text-gray-400 mt-1">Vista general del sistema</p>
+                </div>
+
+                <!-- Estadísticas Principales -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    
+                    <!-- Total Productos -->
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Total Productos</p>
+                                <p class="text-3xl font-bold text-white mt-2" th:text="${totalProductos}">0</p>
+                            </div>
+                            <div class="bg-blue-600 rounded-full p-3">
+                                <span class="text-2xl">🏷️</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Clientes -->
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Total Clientes</p>
+                                <p class="text-3xl font-bold text-white mt-2" th:text="${totalClientes}">0</p>
+                            </div>
+                            <div class="bg-green-600 rounded-full p-3">
+                                <span class="text-2xl">👥</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Empleados -->
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Total Empleados</p>
+                                <p class="text-3xl font-bold text-white mt-2" th:text="${totalEmpleados}">0</p>
+                            </div>
+                            <div class="bg-purple-600 rounded-full p-3">
+                                <span class="text-2xl">👨‍💼</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Ventas -->
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Total Ventas</p>
+                                <p class="text-3xl font-bold text-white mt-2">
+                                    S/ <span th:text="${#numbers.formatDecimal(totalVentas, 1, 2)}">0</span>
+                                </p>
+                            </div>
+                            <div class="bg-yellow-600 rounded-full p-3">
+                                <span class="text-2xl">💰</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pedidos por Estado -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <p class="text-gray-400 text-sm mb-2">Pendientes</p>
+                        <p class="text-2xl font-bold text-yellow-500" th:text="${pedidosPendientes}">0</p>
+                    </div>
+
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <p class="text-gray-400 text-sm mb-2">En Proceso</p>
+                        <p class="text-2xl font-bold text-blue-500" th:text="${pedidosEnProceso}">0</p>
+                    </div>
+
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <p class="text-gray-400 text-sm mb-2">Enviados</p>
+                        <p class="text-2xl font-bold text-purple-500" th:text="${pedidosEnviados}">0</p>
+                    </div>
+
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <p class="text-gray-400 text-sm mb-2">Entregados</p>
+                        <p class="text-2xl font-bold text-green-500" th:text="${pedidosEntregados}">0</p>
+                    </div>
+                </div>
+
+                <!-- Sección de Alertas y Datos -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Productos con Bajo Stock -->
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4">⚠️ Productos con Bajo Stock</h3>
+                        <div class="space-y-3">
+                            <div th:if="${productosBajoStock.empty}" class="text-gray-400 text-sm">
+                                ✅ Todos los productos tienen stock suficiente
+                            </div>
+                            <div th:each="producto : ${productosBajoStock}" class="flex justify-between items-center bg-gray-900 p-3 rounded">
+                                <div>
+                                    <p class="text-white font-medium" th:text="${producto.nombre}">Producto X</p>
+                                    <p class="text-gray-400 text-sm" th:text="${producto.categoria.nombre}">Categoría</p>
+                                </div>
+                                <span class="bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold" 
+                                      th:text="${producto.stock} + ' unidades'">0 unidades</span>
+                            </div>
+                        </div>
+                        <a href="/admin/productos/bajo-stock" class="block mt-4 text-blue-400 hover:text-blue-300 text-sm">
+                            Ver todos →
+                        </a>
+                    </div>
+
+                    <!-- Top Clientes -->
+                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4">🏆 Top Clientes</h3>
+                        <div class="space-y-3">
+                            <div th:each="cliente, iter : ${topClientes}" th:if="${iter.index < 5}" 
+                                 class="flex justify-between items-center bg-gray-900 p-3 rounded">
+                                <div class="flex items-center">
+                                    <span class="text-2xl mr-3" th:text="${iter.index == 0 ? '🥇' : (iter.index == 1 ? '🥈' : (iter.index == 2 ? '🥉' : '🏅'))}">🥇</span>
+                                    <div>
+                                        <p class="text-white font-medium" th:text="${cliente.nombreCompleto}">Cliente</p>
+                                        <p class="text-gray-400 text-sm" 
+                                           th:text="${cliente.numeroPedidos} + ' pedidos'">0 pedidos</p>
+                                    </div>
+                                </div>
+                                <span class="text-green-400 font-semibold">
+                                    S/ <span th:text="${#numbers.formatDecimal(cliente.totalCompras, 1, 2)}">0</span>
+                                </span>
+                            </div>
+                        </div>
+                        <a href="/admin/clientes/top-compras" class="block mt-4 text-blue-400 hover:text-blue-300 text-sm">
+                            Ver todos →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Últimos Pedidos -->
+                <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+                    <h3 class="text-xl font-semibold text-white mb-4">📦 Últimos Pedidos</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-gray-400 border-b border-gray-700">
+                                    <th class="pb-3">ID</th>
+                                    <th class="pb-3">Cliente</th>
+                                    <th class="pb-3">Fecha</th>
+                                    <th class="pb-3">Total</th>
+                                    <th class="pb-3">Estado</th>
+                                    <th class="pb-3">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-300">
+                                <tr th:each="pedido, iter : ${ultimosPedidos}" th:if="${iter.index < 10}" 
+                                    class="border-b border-gray-700 hover:bg-gray-700">
+                                    <td class="py-3" th:text="${pedido.id}">#001</td>
+                                    <td class="py-3" th:text="${pedido.cliente.nombreCompleto}">Cliente</td>
+                                    <td class="py-3" th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
+                                    <td class="py-3">S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 2)}">0.00</span></td>
+                                    <td class="py-3">
+                                        <span class="px-3 py-1 rounded text-xs font-semibold"
+                                              th:classappend="${pedido.estado == T(com.estilounico.model.enums.EstadoPedido).PENDIENTE ? 'bg-yellow-900 text-yellow-300' : 
+                                                             (pedido.estado == T(com.estilounico.model.enums.EstadoPedido).EN_PROCESO ? 'bg-blue-900 text-blue-300' : 
+                                                             (pedido.estado == T(com.estilounico.model.enums.EstadoPedido).ENVIADO ? 'bg-purple-900 text-purple-300' : 
+                                                             (pedido.estado == T(com.estilounico.model.enums.EstadoPedido).ENTREGADO ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300')))}"
+                                              th:text="${pedido.estado}">PENDIENTE</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <a th:href="@{/admin/pedidos/detalle/{id}(id=${pedido.id})}" 
+                                           class="text-blue-400 hover:text-blue-300 text-sm">
+                                            Ver detalle →
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="/admin/pedidos" class="block mt-4 text-blue-400 hover:text-blue-300 text-sm">
+                        Ver todos los pedidos →
+                    </a>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

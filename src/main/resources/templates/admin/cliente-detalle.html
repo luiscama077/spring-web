@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen">
+    
+    <!-- Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar-admin}"></div>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='clientes')}"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="max-w-7xl mx-auto">
+                
+                <!-- Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-3xl font-bold text-white" th:text="${cliente.nombreCompleto}">Cliente</h2>
+                            <p class="text-gray-400 mt-1">Perfil completo del cliente</p>
+                        </div>
+                        <a href="/admin/clientes" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
+                            ← Volver
+                        </a>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Columna Principal -->
+                    <div class="lg:col-span-2 space-y-6">
+                        
+                        <!-- Información Personal -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4">👤 Información Personal</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Nombre Completo</p>
+                                    <p class="text-white font-semibold" th:text="${cliente.nombreCompleto}">Cliente</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">DNI</p>
+                                    <p class="text-white" th:text="${cliente.dni}">00000000</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Teléfono</p>
+                                    <p class="text-white" th:text="${cliente.telefono}">999999999</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Género</p>
+                                    <p class="text-white" th:text="${cliente.genero}">NO_ESPECIFICA</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Fecha de Nacimiento</p>
+                                    <p class="text-white" th:text="${cliente.fechaNacimiento != null ? #temporals.format(cliente.fechaNacimiento, 'dd/MM/yyyy') : 'No registrada'}">-</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Usuario</p>
+                                    <p class="text-white" th:text="${cliente.usuario.username}">usuario</p>
+                                </div>
+                                <div class="col-span-2">
+                                    <p class="text-gray-400 text-sm">Email</p>
+                                    <p class="text-white" th:text="${cliente.usuario.email}">email@mail.com</p>
+                                </div>
+                                <div class="col-span-2">
+                                    <p class="text-gray-400 text-sm">Dirección Principal</p>
+                                    <p class="text-white" th:text="${cliente.direccionPrincipal}">Dirección</p>
+                                </div>
+                                <div class="col-span-2" th:if="${cliente.direccionSecundaria != null}">
+                                    <p class="text-gray-400 text-sm">Dirección Secundaria</p>
+                                    <p class="text-white" th:text="${cliente.direccionSecundaria}">Dirección</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Historial de Pedidos -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4">📦 Historial de Pedidos</h3>
+                            
+                            <div th:if="${pedidos.empty}" class="text-center py-8">
+                                <p class="text-gray-400">Este cliente no ha realizado pedidos aún</p>
+                            </div>
+
+                            <div th:unless="${pedidos.empty}" class="space-y-4">
+                                <div th:each="pedido : ${pedidos}" class="bg-gray-900 rounded-lg p-4">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <p class="text-white font-semibold">
+                                                Pedido #<span th:text="${pedido.id}">001</span>
+                                            </p>
+                                            <p class="text-sm text-gray-400" th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2025</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-green-400 font-semibold text-lg">
+                                                S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 2)}">0.00</span>
+                                            </p>
+                                            <span class="inline-block mt-1 px-3 py-1 rounded text-xs font-semibold"
+                                                  th:classappend="${pedido.estado == T(com.estilounico.model.enums.EstadoPedido).PENDIENTE ? 'bg-yellow-900 text-yellow-300' : 
+                                                                 (pedido.estado == T(com.estilounico.model.enums.EstadoPedido).EN_PROCESO ? 'bg-blue-900 text-blue-300' : 
+                                                                 (pedido.estado == T(com.estilounico.model.enums.EstadoPedido).ENVIADO ? 'bg-purple-900 text-purple-300' : 
+                                                                 (pedido.estado == T(com.estilounico.model.enums.EstadoPedido).ENTREGADO ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300')))}"
+                                                  th:text="${pedido.estado}">PENDIENTE</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <p class="text-sm text-gray-400">
+                                            <span th:text="${pedido.detalles.size()}">0</span> producto(s)
+                                        </p>
+                                        <a th:href="@{/admin/pedidos/detalle/{id}(id=${pedido.id})}" 
+                                           class="text-blue-400 hover:text-blue-300 text-sm">
+                                            Ver detalle →
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Columna Lateral -->
+                    <div class="space-y-6">
+                        
+                        <!-- Estadísticas del Cliente -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4">📊 Estadísticas</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-900 rounded-lg p-4">
+                                    <p class="text-gray-400 text-sm mb-1">Total Gastado</p>
+                                    <p class="text-2xl font-bold text-green-400">
+                                        S/ <span th:text="${#numbers.formatDecimal(cliente.totalCompras, 1, 2)}">0.00</span>
+                                    </p>
+                                </div>
+                                <div class="bg-gray-900 rounded-lg p-4">
+                                    <p class="text-gray-400 text-sm mb-1">Total de Pedidos</p>
+                                    <p class="text-2xl font-bold text-blue-400" th:text="${cliente.numeroPedidos}">0</p>
+                                </div>
+                                <div class="bg-gray-900 rounded-lg p-4">
+                                    <p class="text-gray-400 text-sm mb-1">Promedio por Pedido</p>
+                                    <p class="text-2xl font-bold text-purple-400">
+                                        S/ <span th:text="${cliente.numeroPedidos > 0 ? #numbers.formatDecimal(cliente.totalCompras.divide(cliente.numeroPedidos, 2, T(java.math.RoundingMode).HALF_UP), 1, 2) : '0.00'}">0.00</span>
+                                    </p>
+                                </div>
+                                <div class="bg-gray-900 rounded-lg p-4 text-center">
+                                    <span th:if="${cliente.clienteFrecuente}" class="text-4xl">⭐</span>
+                                    <span th:unless="${cliente.clienteFrecuente}" class="text-4xl">👤</span>
+                                    <p class="text-gray-400 text-sm mt-2" th:text="${cliente.clienteFrecuente ? 'Cliente Frecuente' : 'Cliente Regular'}">Estado</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información de Cuenta -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4">🔑 Cuenta</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Estado de Cuenta</p>
+                                    <span th:if="${cliente.usuario.activo}" class="inline-block mt-1 px-3 py-1 bg-green-900 text-green-200 rounded text-sm">
+                                        ✓ Activa
+                                    </span>
+                                    <span th:unless="${cliente.usuario.activo}" class="inline-block mt-1 px-3 py-1 bg-red-900 text-red-200 rounded text-sm">
+                                        ✗ Inactiva
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Fecha de Registro</p>
+                                    <p class="text-white font-semibold" th:text="${#temporals.format(cliente.usuario.fechaRegistro, 'dd/MM/yyyy')}">01/01/2025</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">ID de Usuario</p>
+                                    <p class="text-white" th:text="${cliente.usuario.id}">1</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">ID de Cliente</p>
+                                    <p class="text-white" th:text="${cliente.id}">1</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Acciones Rápidas -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4">⚡ Acciones</h3>
+                            <div class="space-y-2">
+                                <a th:href="@{/admin/pedidos(clienteId=${cliente.id})}" 
+                                   class="block w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-center transition">
+                                    📦 Ver todos sus pedidos
+                                </a>
+                                <button class="block w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-lg transition" disabled>
+                                    📧 Enviar email (Próximamente)
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
