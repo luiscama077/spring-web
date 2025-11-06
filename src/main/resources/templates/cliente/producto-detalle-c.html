@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
+
+    <div th:replace="~{fragments/navbar :: navbar-cliente}"></div>
+
+    <main class="p-4 sm:p-6 lg:p-8">
+        <div class="max-w-5xl mx-auto">
+
+            <!-- Mensaje de error si el producto no se encuentra -->
+            <div th:if="${error}" class="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
+                <i data-lucide="alert-circle" class="size-5 flex-shrink-0"></i>
+                <p th:text="${error}" class="text-sm"></p>
+            </div>
+
+            <div th:if="${producto}" class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
+                
+                <!-- Columna Izquierda: Imagen del Producto -->
+                <div class="aspect-w-1 aspect-h-1 w-full bg-gray-800/50 rounded-xl border border-gray-700/50 overflow-hidden">
+                    <img th:src="${producto.imagenUrl ?: '/images/default-product.jpg'}" th:alt="${producto.nombre}" class="w-full h-full object-cover object-center">
+                </div>
+
+                <!-- Columna Derecha: Información y Acciones -->
+                <div class="flex flex-col">
+                    <p class="text-sm font-medium text-green-400" th:text="${producto.categoria.nombre}">Categoría</p>
+                    <h1 class="text-3xl sm:text-4xl font-bold text-white mt-2" th:text="${producto.nombre}">Nombre del Producto</h1>
+                    <p class="text-lg text-gray-400 mt-1" th:text="${producto.marca}">Marca</p>
+
+                    <p class="text-4xl font-bold text-green-400 mt-6">
+                        S/ <span th:text="${#numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT' )}">99.90</span>
+                    </p>
+
+                    <p class="text-gray-300 mt-6 leading-relaxed" th:text="${producto.descripcion}">
+                        Descripción detallada del producto.
+                    </p>
+
+                    <!-- Especificaciones del Producto -->
+                    <div class="mt-8 border-t border-gray-700 pt-6">
+                        <h3 class="text-lg font-semibold text-white mb-4">Especificaciones</h3>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="ruler" class="size-4 text-gray-400"></i>
+                                <span class="text-gray-400">Talla:</span>
+                                <span class="font-semibold text-white" th:text="${producto.talla}">UNICA</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="palette" class="size-4 text-gray-400"></i>
+                                <span class="text-gray-400">Color:</span>
+                                <span class="font-semibold text-white" th:text="${producto.color}">Sin especificar</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="users" class="size-4 text-gray-400"></i>
+                                <span class="text-gray-400">Género:</span>
+                                <span class="font-semibold text-white capitalize" th:text="${#strings.toLowerCase(producto.genero)}">Unisex</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="package" class="size-4 text-gray-400"></i>
+                                <span class="text-gray-400">Stock disponible:</span>
+                                <span class="font-semibold text-white" th:text="${producto.stock}">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario para Añadir al Carrito -->
+                    <form th:action="@{/cliente/carrito/agregar}" method="post" class="mt-8">
+                        <input type="hidden" name="productoId" th:value="${producto.id}" />
+                        
+                        <div class="flex items-end gap-4">
+                            <!-- Selector de Cantidad -->
+                            <div>
+                                <label for="cantidad" class="block text-sm font-medium text-gray-400 mb-1">Cantidad</label>
+                                <input type="number" id="cantidad" name="cantidad" value="1" min="1" th:max="${producto.stock}" 
+                                       class="w-24 text-center bg-gray-800 border border-gray-700 rounded-md py-3 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
+                                       th:disabled="${producto.stock == 0}">
+                            </div>
+                            
+                            <!-- Botón de Añadir -->
+                            <button type="submit" 
+                                    th:disabled="${producto.stock == 0}"
+                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-lg transition flex items-center justify-center gap-2 disabled:bg-gray-600 disabled:cursor-not-allowed">
+                                <i data-lucide="shopping-cart" class="inline size-5"></i>
+                                <span th:if="${producto.stock > 0}">Añadir al Carrito</span>
+                                <span th:if="${producto.stock == 0}">Agotado</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

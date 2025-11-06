@@ -3,6 +3,7 @@ package com.estilounico.controller.admin;
 import com.estilounico.model.Categoria;
 import com.estilounico.service.CategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -81,7 +82,10 @@ public class AdminCategoriaController {
             categoriaService.eliminar(id);
             redirectAttributes.addFlashAttribute("mensaje", "Categoría eliminada exitosamente");
             redirectAttributes.addFlashAttribute("tipo", "success");
-        } catch (Exception e) {
+        }catch (DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("mensaje", "No se puede eliminar porque hay productos asociados.");
+            redirectAttributes.addFlashAttribute("tipo", "error");
+        }catch (Exception e) {
             redirectAttributes.addFlashAttribute("mensaje", "Error: No se puede eliminar. " + e.getMessage());
             redirectAttributes.addFlashAttribute("tipo", "error");
         }

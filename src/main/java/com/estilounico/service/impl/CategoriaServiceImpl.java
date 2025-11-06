@@ -17,7 +17,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     private CategoriaRepository categoriaRepository;
     
     @Override
-    public Categoria guardar(Categoria categoria) {
+    public Categoria guardar(Categoria categoria) { 
         if (categoriaRepository.existsByNombre(categoria.getNombre())) {
             throw new RuntimeException("Ya existe una categoría con el nombre: " + categoria.getNombre());
         }
@@ -25,7 +25,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
     
     @Override
-    public Categoria actualizar(Categoria categoria) {
+    public Categoria actualizar(Categoria categoria) { 
         if (!categoriaRepository.existsById(categoria.getId())) {
             throw new RuntimeException("Categoría no encontrada con ID: " + categoria.getId());
         }
@@ -40,29 +40,22 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
     
     @Override
-    public void eliminar(Long id) {
+    public void eliminar(Long id) { 
         if (!categoriaRepository.existsById(id)) {
             throw new RuntimeException("Categoría no encontrada con ID: " + id);
         }
-        // Nota: Si hay productos asociados, la BD lanzará error por RESTRICT
         categoriaRepository.deleteById(id);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public Optional<Categoria> buscarPorId(Long id) {
+    public Optional<Categoria> buscarPorId(Long id) { 
         return categoriaRepository.findById(id);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public Optional<Categoria> buscarPorNombre(String nombre) {
-        return categoriaRepository.findByNombre(nombre);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<Categoria> listarTodas() {
+    public List<Categoria> listarTodas() { 
         return categoriaRepository.findAll();
     }
     
@@ -72,20 +65,8 @@ public class CategoriaServiceImpl implements CategoriaService {
         return categoriaRepository.findByActivo(true);
     }
     
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<Categoria> buscarPorNombre(String nombre) {
-//        return categoriaRepository.findByNombreContainingIgnoreCase(nombre);
-//    }
-    
     @Override
-    @Transactional(readOnly = true)
-    public boolean existeNombre(String nombre) {
-        return categoriaRepository.existsByNombre(nombre);
-    }
-    
-    @Override
-    public void activarDesactivar(Long id, Boolean activo) {
+    public void activarDesactivar(Long id, Boolean activo) { 
         Categoria categoria = categoriaRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Categoría no encontrada con ID: " + id));
         categoria.setActivo(activo);

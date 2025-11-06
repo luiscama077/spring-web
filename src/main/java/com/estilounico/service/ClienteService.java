@@ -1,8 +1,6 @@
 package com.estilounico.service;
 
 import com.estilounico.model.Cliente;
-import com.estilounico.model.Usuario;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,11 +14,9 @@ public interface ClienteService {
     
     Optional<Cliente> buscarPorId(Long id);
     
-    Optional<Cliente> buscarPorUsuario(Usuario usuario);
-    
     Optional<Cliente> buscarPorUsuarioId(Long usuarioId);
     
-    List<Cliente> listarTodos();
+    List<Cliente> listarTodos();//e-c
     
     List<Cliente> listarClientesFrecuentes();
     
@@ -30,11 +26,7 @@ public interface ClienteService {
     
     List<Cliente> listarTopClientesPorPedidos();
     
-    boolean existeDni(String dni);
-    
-    void actualizarTotalCompras(Long clienteId, BigDecimal monto);
-    
-    void incrementarNumeroPedidos(Long clienteId);
-    
-    void marcarComoFrecuente(Long clienteId, Boolean frecuente);
+    List<Cliente> buscarPorNombreOIdentificacion(String termino);
+
+    Optional<Cliente> buscarPorIdConPedidos(Long id);
 }

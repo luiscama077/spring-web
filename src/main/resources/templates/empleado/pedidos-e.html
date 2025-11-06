@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
+
+    <div th:replace="~{fragments/navbar :: navbar-empleado}"></div>
+
+    <div class="flex">
+        <div th:replace="~{fragments/navbar :: sidebar-empleado(seccion='pedidos' )}"></div>
+        <div th:replace="~{fragments/navbar :: sidebar-overlay}"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto">
+                
+                <!-- Header -->
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-white">Gestión de Pedidos</h2>
+                    <p class="text-gray-400 mt-1">Visualiza, filtra y procesa los pedidos de los clientes.</p>
+                </div>
+
+                <!-- Barra de filtros -->
+                <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 mb-6 backdrop-blur-sm">
+                    <div class="flex flex-col sm:flex-row items-stretch gap-4">
+                        <form th:action="@{/empleado/pedidos}" method="get" class="flex-grow">
+                            <div class="relative">
+                                <i data-lucide="filter" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                <select name="estado" onchange="this.form.submit()" class="w-full appearance-none pl-10 pr-8 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition-all cursor-pointer">
+                                    <option value="">Filtrar por estado...</option>
+                                    <option th:each="e : ${estados}" th:value="${e.name()}" th:text="${e.name()}" th:selected="${estadoSeleccionado == e.name()}"></option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none"></i>
+                            </div>
+                        </form>
+                        <a th:href="@{/empleado/pedidos}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gray-700/50 hover:bg-gray-600/50 text-white px-4 py-2.5 rounded-lg transition-colors" title="Limpiar filtro">
+                            <i data-lucide="rotate-cw" class="size-4"></i>
+                            <span>Limpiar</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Tabla de Pedidos -->
+                <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="bg-cyan-500/20 p-2 rounded-lg"><i data-lucide="shopping-bag" class="inline size-5 text-cyan-400"></i></div>
+                        <h3 class="text-xl font-semibold text-white">Listado de Pedidos</h3>
+                    </div>
+                    
+                    <div th:if="${pedidos.empty}" class="text-center py-12">
+                        <i data-lucide="inbox" class="size-12 mx-auto text-gray-600 mb-3"></i>
+                        <h3 class="text-lg font-semibold text-white">No se encontraron pedidos</h3>
+                        <p class="mt-1 text-sm text-gray-400">No hay pedidos que coincidan con los filtros seleccionados.</p>
+                    </div>
+
+                    <div th:unless="${pedidos.empty}" class="space-y-4">
+                        <!-- Encabezado de la tabla (visible en desktop) -->
+                        <div class="hidden md:grid md:grid-cols-12 md:gap-4 px-4 text-left text-gray-400 font-medium border-b border-gray-700/50 pb-3">
+                            <div class="col-span-1">ID</div>
+                            <div class="col-span-3">Cliente</div>
+                            <div class="col-span-2">Fecha</div>
+                            <div class="col-span-2">Total</div>
+                            <div class="col-span-2">Estado</div>
+                            <div class="col-span-2 text-center">Acciones</div>
+                        </div>
+
+                        <!-- Lista de pedidos -->
+                        <div th:each="pedido : ${pedidos}" class="grid grid-cols-1 md:grid-cols-12 md:gap-4 items-center p-4 rounded-lg bg-gray-900/30 md:bg-transparent md:p-0 md:border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors gap-3 md:gap-0">
+                            <div class="md:col-span-1 font-semibold text-white">#<span th:text="${pedido.id}">1001</span></div>
+                            <div class="md:col-span-3" th:text="${pedido.cliente.nombreCompleto}">Nombre Cliente</div>
+                            <div class="md:col-span-2 text-sm text-gray-400" th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">Fecha</div>
+                            <div class="md:col-span-2 font-semibold text-green-400">S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 'COMMA', 2, 'POINT')}">0.00</span></div>
+                            <div class="md:col-span-2">
+                                <span th:text="${#strings.replace(pedido.estado.name(), '_', ' ')}"
+                                      th:classappend="${#strings.toString(pedido.estado) == 'PENDIENTE' ? 'bg-yellow-500/20 text-yellow-400' : 
+                                                       #strings.toString(pedido.estado) == 'EN_PROCESO' ? 'bg-blue-500/20 text-blue-400' :
+                                                       #strings.toString(pedido.estado) == 'ENVIADO' ? 'bg-purple-500/20 text-purple-400' :
+                                                       #strings.toString(pedido.estado) == 'ENTREGADO' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}"
+                                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium capitalize">
+                                </span>
+                            </div>
+                            <div class="md:col-span-2 flex justify-start md:justify-center gap-2 pt-3 md:pt-0 border-t border-gray-700/50 md:border-t-0">
+                                <a th:href="@{/empleado/pedidos/detalle/{id}(id=${pedido.id})}" class="flex-1 md:flex-none bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/30 hover:border-blue-600 px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-center gap-2" title="Ver Detalle y Procesar">
+                                    <i data-lucide="eye" class="inline size-4"></i>
+                                    <span class="md:hidden">Ver Detalle</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/navbar :: sidebar-scripts}"></div>
+</body>
+</html>

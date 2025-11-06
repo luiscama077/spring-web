@@ -10,8 +10,11 @@
         <!-- Sidebar -->
         <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='categorias')}"></div>
 
+		<!-- Overlay -->
+		<div th:replace="~{fragments/navbar :: sidebar-overlay}"></div>
+
         <!-- Main Content -->
-        <main class="flex-1 p-8">
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
             <div class="max-w-2xl mx-auto">
                 
                 <!-- Header -->
@@ -24,7 +27,7 @@
                 </div>
 
                 <!-- Formulario -->
-                <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
+                <div class="bg-gray-800/50 rounded-xl p-8 border border-gray-700/50 backdrop-blur-sm">
                     <form th:action="${accion == 'nueva' ? '/admin/categorias/guardar' : '/admin/categorias/actualizar'}" 
                           th:object="${categoria}" 
                           method="post">
@@ -33,42 +36,52 @@
                         
                         <!-- Nombre -->
                         <div class="mb-6">
-                            <label class="block text-gray-300 mb-2">Nombre de la Categoría *</label>
+                            <label class="block text-gray-300 mb-2 font-medium flex items-center gap-2">
+                                <i data-lucide="tag" class="inline size-4"></i>
+                                <span>Nombre de la Categoría *</span>
+                            </label>
                             <input type="text" 
                                    th:field="*{nombre}" 
                                    required
                                    placeholder="Ej: ROPA HOMBRE, CALZADO MUJER"
-                                   class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all">
                         </div>
 
                         <!-- Descripción -->
                         <div class="mb-6">
-                            <label class="block text-gray-300 mb-2">Descripción</label>
+                            <label class="block text-gray-300 mb-2 font-medium flex items-center gap-2">
+                                <i data-lucide="align-left" class="inline size-4"></i>
+                                <span>Descripción</span>
+                            </label>
                             <textarea th:field="*{descripcion}" 
                                       rows="4"
                                       placeholder="Breve descripción de la categoría"
-                                      class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                                      class="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all resize-none"></textarea>
                         </div>
 
                         <!-- Estado (solo para editar) -->
                         <div th:if="${accion == 'editar'}" class="mb-6">
-                            <label class="flex items-center">
-                                <input type="checkbox" 
-                                       th:field="*{activo}"
-                                       class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500">
-                                <span class="ml-2 text-gray-300">Categoría activa</span>
-                            </label>
+                            <div class="bg-gray-700/30 border border-gray-600/30 rounded-lg p-4">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" 
+                                           th:field="*{activo}"
+                                           class="w-5 h-5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-2 focus:ring-blue-500/50 transition-all cursor-pointer">
+                                    <span class="ml-3 text-gray-300 font-medium">Categoría activa</span>
+                                </label>
+                            </div>
                         </div>
 
                         <!-- Botones -->
-                        <div class="flex space-x-4">
+                        <div class="flex gap-4">
                             <button type="submit" 
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition font-semibold">
-                                💾 Guardar
+                                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition-all font-semibold shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 flex items-center justify-center gap-2">
+                                <i data-lucide="save" class="inline size-5"></i>
+                                <span>Guardar</span>
                             </button>
                             <a href="/admin/categorias" 
-                               class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg transition">
-                                ❌ Cancelar
+                               class="flex-1 bg-gray-700/50 hover:bg-gray-700 border border-gray-600/50 hover:border-gray-600 text-white px-8 py-3 rounded-lg transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="x" class="inline size-5"></i>
+                                <span>Cancelar</span>
                             </a>
                         </div>
                     </form>
@@ -77,6 +90,11 @@
             </div>
         </main>
     </div>
-
+	
+	<!-- Footer -->
+	<div th:replace="~{fragments/footer :: footer}"></div>
+	
+	<!-- Scripts del sidebar-->
+	<div th:replace="~{fragments/navbar :: sidebar-scripts}"></div>
 </body>
 </html>

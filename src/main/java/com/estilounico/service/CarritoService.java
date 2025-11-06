@@ -1,31 +1,16 @@
 package com.estilounico.service;
 
 import com.estilounico.model.CarritoItem;
-import com.estilounico.model.Cliente;
-import com.estilounico.model.Producto;
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 public interface CarritoService {
     
-    CarritoItem agregarAlCarrito(Cliente cliente, Producto producto, Integer cantidad);
+    List<CarritoItem> listarItemsPorCliente(Long clienteId);
     
-    CarritoItem actualizarCantidad(Long carritoItemId, Integer nuevaCantidad);
+    void agregarProducto(Long clienteId, Long productoId, int cantidad);
     
-    void eliminarDelCarrito(Long carritoItemId);
+    void eliminarItem(Long itemId, Long clienteId);
     
-    void vaciarCarrito(Cliente cliente);
-    
-    Optional<CarritoItem> buscarPorId(Long id);
-    
-    Optional<CarritoItem> buscarPorClienteYProducto(Cliente cliente, Producto producto);
-    
-    List<CarritoItem> listarPorCliente(Cliente cliente);
-    
-    Long contarItemsCarrito(Cliente cliente);
-    
-    BigDecimal calcularTotalCarrito(Cliente cliente);
-    
-    boolean existeEnCarrito(Cliente cliente, Producto producto);
+    void actualizarCantidad(Long itemId, int cantidad, Long clienteId);
+
 }

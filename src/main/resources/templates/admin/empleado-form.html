@@ -1,156 +1,152 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/header :: head}"></head>
-<body class="bg-gray-900 min-h-screen">
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
     
     <!-- Navbar -->
     <div th:replace="~{fragments/navbar :: navbar-admin}"></div>
 
     <div class="flex">
         <!-- Sidebar -->
-        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='empleados')}"></div>
+        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='empleados'  )}"></div>
+
+        <!-- Overlay -->
+        <div th:replace="~{fragments/navbar :: sidebar-overlay}"></div>
 
         <!-- Main Content -->
-        <main class="flex-1 p-8">
-            <div class="max-w-3xl mx-auto">
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+            <div class="max-w-4xl mx-auto">
                 
                 <!-- Header -->
-                <div class="mb-8">
+                <div class="mb-8 text-center sm:text-left">
                     <h2 class="text-3xl font-bold text-white" 
-                        th:text="${accion == 'nuevo' ? 'Nuevo Empleado' : 'Editar Empleado'}">
-                        Nuevo Empleado
+                        th:text="${accion == 'nuevo' ? 'Registrar Nuevo Empleado' : 'Editar Empleado'}">
+                        Título del Formulario
                     </h2>
-                    <p class="text-gray-400 mt-1">Complete los datos del empleado</p>
+                    <p class="text-gray-400 mt-1">Complete la información para gestionar el acceso y los datos del empleado.</p>
                 </div>
 
                 <!-- Formulario -->
-                <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
+                <div class="bg-gray-800/50 rounded-xl p-6 sm:p-8 border border-gray-700/50 backdrop-blur-sm">
                     <form th:action="${accion == 'nuevo' ? '/admin/empleados/guardar' : '/admin/empleados/actualizar'}" 
                           th:object="${empleado}" 
-                          method="post">
+                          method="post"
+                          class="space-y-8">
                         
                         <!-- IDs ocultos para edición -->
                         <input type="hidden" th:field="*{id}" th:if="${accion == 'editar'}">
                         <input type="hidden" th:field="*{usuario.id}" th:if="${accion == 'editar'}">
 
-                        <!-- Datos de Usuario -->
-                        <div class="mb-8 pb-8 border-b border-gray-700">
-                            <h3 class="text-xl font-semibold text-white mb-4">Datos de Acceso</h3>
+                        <!-- Sección: Datos de Acceso -->
+                        <fieldset class="space-y-6">
+                            <legend class="text-xl font-semibold text-white pb-4 border-b border-gray-700/50">Datos de Acceso</legend>
                             
-                            <!-- Username -->
-                            <div class="mb-4">
-                                <label class="block text-gray-300 mb-2">Nombre de Usuario *</label>
-                                <input type="text" 
-                                       th:field="*{usuario.username}"
-                                       required
-                                       placeholder="Ej: jperez"
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Username -->
+                                <div>
+                                    <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Nombre de Usuario *</label>
+                                    <div class="relative">
+                                        <i data-lucide="at-sign" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                        <input type="text" id="username" th:field="*{usuario.username}" required placeholder="Ej: jperez" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                    </div>
+                                </div>
+                                <!-- Email -->
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email *</label>
+                                    <div class="relative">
+                                        <i data-lucide="mail" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                        <input type="email" id="email" th:field="*{usuario.email}" required placeholder="ejemplo@dominio.com" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                    </div>
+                                </div>
                             </div>
-
-                            <!-- Email -->
-                            <div class="mb-4">
-                                <label class="block text-gray-300 mb-2">Email *</label>
-                                <input type="email" 
-                                       th:field="*{usuario.email}"
-                                       required
-                                       placeholder="ejemplo@estilounico.com"
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
                             <!-- Password -->
-                            <div class="mb-4">
-                                <label class="block text-gray-300 mb-2">
+                            <div>
+                                <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
                                     Contraseña <span th:if="${accion == 'nuevo'}">*</span>
-                                    <span th:if="${accion == 'editar'}" class="text-gray-500 text-sm">(Dejar vacío para mantener actual)</span>
                                 </label>
-                                <input type="password" 
-                                       th:field="*{usuario.password}"
-                                       th:required="${accion == 'nuevo'}"
-                                       placeholder="Mínimo 6 caracteres"
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <div class="relative">
+                                    <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <input type="password" id="password" th:field="*{usuario.password}" th:required="${accion == 'nuevo'}" placeholder="Mínimo 6 caracteres" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                </div>
+                                <p th:if="${accion == 'editar'}" class="text-gray-500 text-xs mt-2">Dejar el campo de contraseña vacío para no realizar cambios.</p>
                             </div>
-                        </div>
+                        </fieldset>
 
-                        <!-- Datos del Empleado -->
-                        <h3 class="text-xl font-semibold text-white mb-4">Datos Personales</h3>
+                        <!-- Sección: Datos Personales -->
+                        <fieldset class="space-y-6">
+                            <legend class="text-xl font-semibold text-white pb-4 border-b border-gray-700/50">Datos Personales</legend>
 
-                        <!-- Nombre Completo -->
-                        <div class="mb-6">
-                            <label class="block text-gray-300 mb-2">Nombre Completo *</label>
-                            <input type="text" 
-                                   th:field="*{nombreCompleto}"
-                                   required
-                                   placeholder="Ej: Juan Pérez García"
-                                   class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        <!-- Fila: DNI y Teléfono -->
-                        <div class="grid grid-cols-2 gap-6 mb-6">
+                            <!-- Nombre Completo -->
                             <div>
-                                <label class="block text-gray-300 mb-2">DNI</label>
-                                <input type="text" 
-                                       th:field="*{dni}"
-                                       placeholder="00000000"
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <label for="nombreCompleto" class="block text-sm font-medium text-gray-300 mb-2">Nombre Completo *</label>
+                                <div class="relative">
+                                    <i data-lucide="user" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <input type="text" id="nombreCompleto" th:field="*{nombreCompleto}" required placeholder="Ej: Juan Pérez García" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-gray-300 mb-2">Teléfono</label>
-                                <input type="text" 
-                                       th:field="*{telefono}"
-                                       placeholder="999999999"
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                        </div>
 
-                        <!-- Dirección -->
-                        <div class="mb-6">
-                            <label class="block text-gray-300 mb-2">Dirección</label>
-                            <textarea th:field="*{direccion}"
-                                      rows="2"
-                                      placeholder="Ej: Av. Principal 123, Arequipa"
-                                      class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                        </div>
-
-                        <!-- Fila: Fecha Contratación y Cargo -->
-                        <div class="grid grid-cols-2 gap-6 mb-6">
-                            <div>
-                                <label class="block text-gray-300 mb-2">Fecha de Contratación *</label>
-                                <input type="date" 
-                                       th:field="*{fechaContratacion}"
-                                       required
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <!-- Fila: DNI y Teléfono -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="dni" class="block text-sm font-medium text-gray-300 mb-2">DNI</label>
+                                    <div class="relative">
+                                        <i data-lucide="scan-line" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                        <input type="text" id="dni" th:field="*{dni}" placeholder="00000000" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="telefono" class="block text-sm font-medium text-gray-300 mb-2">Teléfono</label>
+                                    <div class="relative">
+                                        <i data-lucide="phone" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                        <input type="text" id="telefono" th:field="*{telefono}" placeholder="999999999" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-gray-300 mb-2">Cargo</label>
-                                <input type="text" 
-                                       th:field="*{cargo}"
-                                       placeholder="Vendedor"
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                        </div>
 
-                        <!-- Estado Laboral -->
-                        <div class="mb-6">
-                            <label class="block text-gray-300 mb-2">Estado Laboral *</label>
-                            <select th:field="*{estadoLaboral}"
-                                    required
-                                    class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option th:each="estado : ${estadosLaborales}" 
-                                        th:value="${estado}" 
-                                        th:text="${estado}">Estado</option>
-                            </select>
-                        </div>
+                            <!-- Dirección -->
+                            <div>
+                                <label for="direccion" class="block text-sm font-medium text-gray-300 mb-2">Dirección</label>
+                                <textarea id="direccion" th:field="*{direccion}" rows="2" placeholder="Ej: Av. Principal 123, Arequipa" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"></textarea>
+                            </div>
+
+                            <!-- Fila: Fecha Contratación, Cargo y Estado -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label for="fechaContratacion" class="block text-sm font-medium text-gray-300 mb-2">Fecha de Contratación *</label>
+                                    <input type="date" id="fechaContratacion" name="fechaContratacion"  
+                                           th:value="${empleado.fechaContratacion != null ? #temporals.format(empleado.fechaContratacion, 'yyyy-MM-dd') : ''}" 
+                                           required 
+                                           class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                </div>
+                                <div>
+                                    <label for="cargo" class="block text-sm font-medium text-gray-300 mb-2">Cargo</label>
+                                    <div class="relative">
+                                        <i data-lucide="briefcase" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                        <input type="text" id="cargo" th:field="*{cargo}" placeholder="Vendedor" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="estadoLaboral" class="block text-sm font-medium text-gray-300 mb-2">Estado Laboral *</label>
+                                    <div class="relative">
+                                        <i data-lucide="clipboard-check" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                        <select id="estadoLaboral" th:field="*{estadoLaboral}" required class="w-full appearance-none pl-10 pr-8 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                            <option th:each="estado : ${estadosLaborales}" th:value="${estado}" th:text="${estado}">Estado</option>
+                                        </select>
+                                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
 
                         <!-- Botones -->
-                        <div class="flex space-x-4">
-                            <button type="submit" 
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition font-semibold">
-                                💾 Guardar
-                            </button>
-                            <a href="/admin/empleados" 
-                               class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg transition inline-block text-center">
-                                ❌ Cancelar
+                        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-4 pt-8 border-t border-gray-700/50">
+                            <a href="/admin/empleados" class="w-full sm:w-auto text-center bg-gray-700/50 hover:bg-gray-600/50 text-white px-6 py-3 rounded-lg transition-colors">
+                                Cancelar
                             </a>
+                            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-semibold shadow-lg shadow-blue-600/20">
+                                <i data-lucide="save" class="size-5"></i>
+                                Guardar Empleado
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -158,6 +154,12 @@
             </div>
         </main>
     </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Scripts del sidebar-->
+    <div th:replace="~{fragments/navbar :: sidebar-scripts}"></div>
 
 </body>
 </html>

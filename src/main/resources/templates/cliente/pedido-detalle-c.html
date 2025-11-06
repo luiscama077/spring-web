@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
+
+    <div th:replace="~{fragments/navbar :: navbar-cliente}"></div>
+
+    <main class="p-4 sm:p-6 lg:p-8">
+        <div class="max-w-4xl mx-auto">
+            
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-white">Detalle del Pedido #<span th:text="${pedido.id}"></span></h1>
+                    <p class="text-gray-400 mt-1">Realizado el <span th:text="${#temporals.format(pedido.fechaPedido, 'dd ''de'' MMMM ''de'' yyyy' )}"></span></p>
+                </div>
+                <a th:href="@{/cliente/mis-pedidos}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-lg flex items-center gap-2">
+                    <i data-lucide="arrow-left" class="size-5"></i><span>Volver</span>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Columna Izquierda: Resumen -->
+                <div class="md:col-span-1">
+                    <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 space-y-4">
+                        <h3 class="text-lg font-semibold text-white">Resumen</h3>
+                        <div>
+                            <p class="text-gray-400 text-sm">Estado del Pedido:</p>
+                            <p class="font-bold text-xl capitalize" th:text="${#strings.toLowerCase(#strings.replace(pedido.estado.name(), '_', ' '))}"
+                               th:classappend="${#strings.toString(pedido.estado) == 'ENTREGADO' ? 'text-green-400' : (#strings.toString(pedido.estado) == 'CANCELADO' ? 'text-red-400' : 'text-yellow-400')}"></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 text-sm">Dirección de Envío:</p>
+                            <p th:text="${pedido.direccionEnvio}"></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 text-sm">Total Pagado:</p>
+                            <p class="font-bold text-2xl text-green-400">S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 'COMMA', 2, 'POINT')}"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Productos -->
+                <div class="md:col-span-2 bg-gray-800/50 p-6 rounded-xl border border-gray-700/50">
+                    <h3 class="text-lg font-semibold text-white mb-4">Productos en este pedido</h3>
+                    <ul class="divide-y divide-gray-700">
+                        <li th:each="detalle : ${pedido.detalles}" class="flex py-4">
+                            <div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-700">
+                                <img th:src="${detalle.producto.imagenUrl ?: '/images/default-product.jpg'}" class="h-full w-full object-cover object-center">
+                            </div>
+                            <div class="ml-4 flex flex-1 flex-col">
+                                <div class="flex justify-between text-base font-medium text-white">
+                                    <h3 th:text="${detalle.producto.nombre}"></h3>
+                                    <p class="ml-4">S/ <span th:text="${#numbers.formatDecimal(detalle.subtotal, 1, 'COMMA', 2, 'POINT')}"></span></p>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-400" th:text="${detalle.cantidad} + ' x S/ ' + ${#numbers.formatDecimal(detalle.precioUnitario, 1, 'COMMA', 2, 'POINT')}"></p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

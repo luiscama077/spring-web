@@ -14,15 +14,9 @@ public interface CategoriaService {
     
     Optional<Categoria> buscarPorId(Long id);
     
-    Optional<Categoria> buscarPorNombre(String nombre);
-    
     List<Categoria> listarTodas();
     
     List<Categoria> listarActivas();
-    
-//    List<Categoria> buscarPorNombre(String nombre);
-    
-    boolean existeNombre(String nombre);
     
     void activarDesactivar(Long id, Boolean activo);
 }

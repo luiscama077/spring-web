@@ -55,7 +55,7 @@ public class LoginController {
                 throw new RuntimeException("Usuario inactivo");
             }
             
-            // Verificar contraseña (sin encriptar por ahora)
+            // Verificar contraseña
             if (!usuario.getPassword().equals(password)) {
                 throw new RuntimeException("Contraseña incorrecta");
             }
@@ -71,14 +71,12 @@ public class LoginController {
                 return "redirect:/admin/dashboard";
                 
             } else if (usuario.getRol() == Rol.EMPLEADO) {
-                // Buscar el empleado asociado y guardarlo en sesión
                 Empleado empleado = empleadoService.buscarPorUsuarioId(usuario.getId())
                     .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
                 session.setAttribute("empleadoId", empleado.getId());
                 return "redirect:/empleado/dashboard";
                 
             } else if (usuario.getRol() == Rol.CLIENTE) {
-                // Buscar el cliente asociado y guardarlo en sesión
                 Cliente cliente = clienteService.buscarPorUsuarioId(usuario.getId())
                     .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
                 session.setAttribute("clienteId", cliente.getId());

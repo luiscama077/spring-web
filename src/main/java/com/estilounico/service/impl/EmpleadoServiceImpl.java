@@ -1,8 +1,6 @@
 package com.estilounico.service.impl;
 
 import com.estilounico.model.Empleado;
-import com.estilounico.model.Usuario;
-import com.estilounico.model.enums.EstadoLaboral;
 import com.estilounico.repository.EmpleadoRepository;
 import com.estilounico.service.EmpleadoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +45,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     
     @Override
     @Transactional(readOnly = true)
-    public Optional<Empleado> buscarPorUsuario(Usuario usuario) {
-        return empleadoRepository.findByUsuario(usuario);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
     public Optional<Empleado> buscarPorUsuarioId(Long usuarioId) {
         return empleadoRepository.findByUsuarioId(usuarioId);
     }
@@ -65,33 +57,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<Empleado> listarPorEstadoLaboral(EstadoLaboral estadoLaboral) {
-        return empleadoRepository.findByEstadoLaboral(estadoLaboral);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<Empleado> listarPorCargo(String cargo) {
-        return empleadoRepository.findByCargo(cargo);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
     public List<Empleado> buscarPorNombre(String nombre) {
         return empleadoRepository.findByNombreCompletoContainingIgnoreCase(nombre);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existeDni(String dni) {
-        return empleadoRepository.existsByDni(dni);
-    }
-    
-    @Override
-    public void cambiarEstadoLaboral(Long id, EstadoLaboral nuevoEstado) {
-        Empleado empleado = empleadoRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID: " + id));
-        empleado.setEstadoLaboral(nuevoEstado);
-        empleadoRepository.save(empleado);
     }
 }

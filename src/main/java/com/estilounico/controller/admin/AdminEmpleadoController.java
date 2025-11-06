@@ -1,11 +1,17 @@
 package com.estilounico.controller.admin;
 
 import com.estilounico.model.Empleado;
+import com.estilounico.model.Pedido;
 import com.estilounico.model.Usuario;
 import com.estilounico.model.enums.EstadoLaboral;
 import com.estilounico.model.enums.Rol;
 import com.estilounico.service.EmpleadoService;
+import com.estilounico.service.PedidoService;
 import com.estilounico.service.UsuarioService;
+
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +27,9 @@ public class AdminEmpleadoController {
     
     @Autowired
     private UsuarioService usuarioService;
+    
+    @Autowired
+    private PedidoService pedidoService;
     
     @GetMapping
     public String listar(Model model) {
@@ -123,11 +132,53 @@ public class AdminEmpleadoController {
         return "redirect:/admin/empleados";
     }
     
+ // Ver detalle del empleado
+    @GetMapping("/detalle/{id}")
+    public String detalleEmpleado(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+    	
+    	try {
+    		Empleado empleado = empleadoService.buscarPorId(id)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+    		List<Pedido> pedidos = pedidoService.listarPorEmpleado(empleado);
+    		
+    		// Calcular estadísticas
+    		int totalPedidos = pedidos.size();
+    		BigDecimal totalGestionado = pedidos.stream()
+    			    .map(Pedido::getTotal)
+    			    .filter(total -> total != null)
+    			    .reduce(BigDecimal.ZERO, BigDecimal::add);
+    		
+    		model.addAttribute("empleado", empleado);
+    		model.addAttribute("pedidos", pedidos);
+    		model.addAttribute("totalPedidos", totalPedidos);
+    		model.addAttribute("totalGestionado", totalGestionado);
+    		
+    		return "admin/empleado-detalle";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensaje", "Error: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipo", "error");
+            return "redirect:/admin/empleados";
+        }
+    }
+    
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             empleadoService.eliminar(id);
             redirectAttributes.addFlashAttribute("mensaje", "Empleado eliminado exitosamente");
+            redirectAttributes.addFlashAttribute("tipo", "success");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensaje", "Error: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipo", "error");
+        }
+        return "redirect:/admin/empleados";
+    }
+    
+    @GetMapping("/toggle/{id}")
+    public String toggleActivo(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            usuarioService.activarDesactivar(id);
+            redirectAttributes.addFlashAttribute("mensaje", "Estado actualizado exitosamente");
             redirectAttributes.addFlashAttribute("tipo", "success");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("mensaje", "Error: " + e.getMessage());

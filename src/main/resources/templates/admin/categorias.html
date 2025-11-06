@@ -10,8 +10,11 @@
         <!-- Sidebar -->
         <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='categorias')}"></div>
 
+		<!-- Overlay -->
+		<div th:replace="~{fragments/navbar :: sidebar-overlay}"></div>
+
         <!-- Main Content -->
-        <main class="flex-1 p-8">
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
             <div class="max-w-6xl mx-auto">
                 
                 <!-- Header -->
@@ -20,15 +23,16 @@
                         <h2 class="text-3xl font-bold text-white">Categorías</h2>
                         <p class="text-gray-400 mt-1">Gestión de categorías de productos</p>
                     </div>
-                    <a href="/admin/categorias/nueva" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
-                        ➕ Nueva Categoría
+                    <a href="/admin/categorias/nueva" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition flex items-center gap-2 shadow-lg shadow-blue-600/20">
+                        <i data-lucide="plus" class="inline size-5"></i>
+                        <span>Nueva Categoría</span>
                     </a>
                 </div>
 
                 <!-- Mensajes -->
                 <div th:if="${mensaje}" 
-                     th:classappend="${tipo == 'success' ? 'bg-green-900 border-green-700 text-green-200' : 'bg-red-900 border-red-700 text-red-200'}"
-                     class="border px-4 py-3 rounded mb-6">
+                     th:classappend="${tipo == 'success' ? 'bg-green-500/10 border-green-500/50 text-green-400' : 'bg-red-500/10 border-red-500/50 text-red-400'}"
+                     class="border px-4 py-3 rounded-lg mb-6 backdrop-blur-sm">
                     <p th:text="${mensaje}">Mensaje</p>
                 </div>
 
@@ -36,45 +40,51 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     
                     <div th:if="${categorias.empty}" class="col-span-full">
-                        <div class="bg-gray-800 rounded-lg p-12 text-center border border-gray-700">
+                        <div class="bg-gray-800/50 rounded-xl p-12 text-center border border-gray-700/50 backdrop-blur-sm">
+                            <i data-lucide="folder-x" class="inline size-12 text-gray-600 mb-3"></i>
                             <p class="text-gray-500">No hay categorías registradas</p>
                         </div>
                     </div>
 
                     <!-- Tarjeta de Categoría -->
-                    <div th:each="categoria : ${categorias}" class="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-blue-600 transition">
+                    <div th:each="categoria : ${categorias}" class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 transition-all backdrop-blur-sm">
                         <div class="flex justify-between items-start mb-4">
-                            <div>
+                            <div class="flex-1">
                                 <h3 class="text-xl font-bold text-white mb-2" th:text="${categoria.nombre}">Categoría</h3>
-                                <p class="text-gray-400 text-sm" th:text="${categoria.descripcion}">Descripción</p>
+                                <p class="text-gray-400 text-sm line-clamp-2" th:text="${categoria.descripcion}">Descripción</p>
                             </div>
-                            <span th:if="${categoria.activo}" class="px-3 py-1 bg-green-900 text-green-200 rounded text-xs font-semibold">
+                            <span th:if="${categoria.activo}" class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold border border-green-500/30 ml-3">
                                 Activa
                             </span>
-                            <span th:unless="${categoria.activo}" class="px-3 py-1 bg-gray-700 text-gray-400 rounded text-xs font-semibold">
+                            <span th:unless="${categoria.activo}" class="px-3 py-1 bg-gray-700/50 text-gray-400 rounded-full text-xs font-semibold border border-gray-600/30 ml-3">
                                 Inactiva
                             </span>
                         </div>
 
-                        <div class="text-sm text-gray-400 mb-4">
-                            <p>Creada: <span th:text="${#temporals.format(categoria.fechaCreacion, 'dd/MM/yyyy')}">01/01/2025</span></p>
-                            <p>ID: <span th:text="${categoria.id}">1</span></p>
+                        <div class="text-sm text-gray-500 mb-4 space-y-1">
+                            <p class="flex items-center gap-2">
+                                <i data-lucide="calendar" class="inline size-4"></i>
+                                <span th:text="${#temporals.format(categoria.fechaCreacion, 'dd/MM/yyyy')}">01/01/2025</span>
+                            </p>
                         </div>
 
                         <!-- Botones de acción -->
-                        <div class="flex space-x-2">
+                        <div class="flex gap-2">
                             <a th:href="@{/admin/categorias/editar/{id}(id=${categoria.id})}" 
-                               class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm text-center transition">
-                                ✏️ Editar
+                               class="flex-1 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/30 hover:border-blue-600 px-4 py-2 rounded-lg text-sm text-center transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="pencil" class="inline size-4"></i>
+                                <span>Editar</span>
                             </a>
                             <a th:href="@{/admin/categorias/toggle/{id}(id=${categoria.id})}" 
-                               class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm transition">
-                                🔄
+                               class="bg-yellow-600/20 hover:bg-yellow-600 text-yellow-400 hover:text-white border border-yellow-500/30 hover:border-yellow-600 px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-center"
+                               title="Cambiar estado">
+                                <i data-lucide="refresh-cw" class="inline size-4"></i>
                             </a>
                             <a th:href="@{/admin/categorias/eliminar/{id}(id=${categoria.id})}" 
                                onclick="return confirm('¿Estás seguro de eliminar esta categoría?')"
-                               class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm transition">
-                                🗑️
+                               class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 hover:border-red-600 px-2 py-2 rounded-lg text-sm transition-all flex items-center justify-center"
+                               title="Eliminar">
+                                <i data-lucide="trash-2" class="inline size-4"></i>
                             </a>
                         </div>
                     </div>
@@ -83,6 +93,11 @@
             </div>
         </main>
     </div>
+	
+	<!-- Footer -->
+	<div th:replace="~{fragments/footer :: footer}"></div>
 
+	<!-- Scripts del sidebar-->
+	<div th:replace="~{fragments/navbar :: sidebar-scripts}"></div>
 </body>
 </html>

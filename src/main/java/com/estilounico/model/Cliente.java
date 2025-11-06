@@ -1,9 +1,13 @@
 package com.estilounico.model;
 
 import com.estilounico.model.enums.Genero;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "cliente")
@@ -47,6 +51,10 @@ public class Cliente {
     
     @Column(name = "cliente_frecuente")
     private Boolean clienteFrecuente = false;
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Pedido> pedidos = new ArrayList<>();
     
     // Constructores
     public Cliente() {
@@ -156,5 +164,13 @@ public class Cliente {
     
     public void setClienteFrecuente(Boolean clienteFrecuente) {
         this.clienteFrecuente = clienteFrecuente;
+    }
+    
+    public List<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(List<Pedido> pedidos) {
+        this.pedidos = pedidos;
     }
 }

@@ -165,6 +165,19 @@ public class AdminClienteController {
         }
     }
     
+    @GetMapping("/toggle/{id}")
+    public String toggleActivo(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            usuarioService.activarDesactivar(id);
+            redirectAttributes.addFlashAttribute("mensaje", "Estado actualizado exitosamente");
+            redirectAttributes.addFlashAttribute("tipo", "success");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensaje", "Error: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipo", "error");
+        }
+        return "redirect:/admin/clientes";
+    }
+    
     // Buscar clientes
     @GetMapping("/buscar")
     public String buscar(@RequestParam String termino, Model model) {

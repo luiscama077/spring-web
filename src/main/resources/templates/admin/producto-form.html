@@ -1,140 +1,144 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/header :: head}"></head>
-<body class="bg-gray-900 min-h-screen">
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
     
     <!-- Navbar -->
     <div th:replace="~{fragments/navbar :: navbar-admin}"></div>
 
     <div class="flex">
         <!-- Sidebar -->
-        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='productos')}"></div>
+        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='productos'  )}"></div>
+
+        <!-- Overlay -->
+        <div th:replace="~{fragments/navbar :: sidebar-overlay}"></div>
 
         <!-- Main Content -->
-        <main class="flex-1 p-8">
-            <div class="max-w-3xl mx-auto">
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+            <div class="max-w-4xl mx-auto">
                 
                 <!-- Header -->
-                <div class="mb-8">
+                <div class="mb-8 text-center sm:text-left">
                     <h2 class="text-3xl font-bold text-white" 
-                        th:text="${accion == 'nuevo' ? 'Nuevo Producto' : 'Editar Producto'}">
-                        Nuevo Producto
+                        th:text="${accion == 'nuevo' ? 'Crear Nuevo Producto' : 'Editar Producto'}">
+                        Título del Formulario
                     </h2>
-                    <p class="text-gray-400 mt-1">Complete los datos del producto</p>
+                    <p class="text-gray-400 mt-1">Rellena los campos para gestionar el producto en el catálogo.</p>
                 </div>
 
                 <!-- Formulario -->
-                <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
+                <div class="bg-gray-800/50 rounded-xl p-6 sm:p-8 border border-gray-700/50 backdrop-blur-sm">
                     <form th:action="${accion == 'nuevo' ? '/admin/productos/guardar' : '/admin/productos/actualizar'}" 
                           th:object="${producto}" 
-                          method="post">
+                          method="post"
+                          class="space-y-6">
                         
                         <input type="hidden" th:field="*{id}" th:if="${accion == 'editar'}">
                         
-                        <!-- Nombre -->
-                        <div class="mb-6">
-                            <label class="block text-gray-300 mb-2">Nombre del Producto *</label>
-                            <input type="text" 
-                                   th:field="*{nombre}" 
-                                   required
-                                   class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <!-- Nombre y Marca -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="nombre" class="block text-sm font-medium text-gray-300 mb-2">Nombre del Producto *</label>
+                                <div class="relative">
+                                    <i data-lucide="package" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <input type="text" id="nombre" th:field="*{nombre}" required class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="marca" class="block text-sm font-medium text-gray-300 mb-2">Marca</label>
+                                <div class="relative">
+                                    <i data-lucide="copyright" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <input type="text" id="marca" th:field="*{marca}" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Descripción -->
-                        <div class="mb-6">
-                            <label class="block text-gray-300 mb-2">Descripción</label>
-                            <textarea th:field="*{descripcion}" 
-                                      rows="3"
-                                      class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        <div>
+                            <label for="descripcion" class="block text-sm font-medium text-gray-300 mb-2">Descripción</label>
+                            <textarea id="descripcion" th:field="*{descripcion}" rows="3" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none" placeholder="Añade detalles sobre el producto..."></textarea>
                         </div>
 
                         <!-- Fila: Categoría y Género -->
-                        <div class="grid grid-cols-2 gap-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-gray-300 mb-2">Categoría *</label>
-                                <select th:field="*{categoria.id}" 
-                                        required
-                                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">Seleccione...</option>
-                                    <option th:each="cat : ${categorias}" 
-                                            th:value="${cat.id}" 
-                                            th:text="${cat.nombre}">Categoría</option>
-                                </select>
+                                <label for="categoria" class="block text-sm font-medium text-gray-300 mb-2">Categoría *</label>
+                                <div class="relative">
+                                    <i data-lucide="layout-grid" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <select id="categoria" th:field="*{categoria.id}" required class="w-full appearance-none pl-10 pr-8 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                        <option value="">Seleccione una categoría...</option>
+                                        <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}">Categoría</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none"></i>
+                                </div>
                             </div>
                             <div>
-                                <label class="block text-gray-300 mb-2">Género *</label>
-                                <select th:field="*{genero}" 
-                                        required
-                                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option th:each="gen : ${generos}" 
-                                            th:value="${gen}" 
-                                            th:text="${gen}">Género</option>
-                                </select>
+                                <label for="genero" class="block text-sm font-medium text-gray-300 mb-2">Género *</label>
+                                <div class="relative">
+                                    <i data-lucide="users" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <select id="genero" th:field="*{genero}" required class="w-full appearance-none pl-10 pr-8 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                        <option th:each="gen : ${generos}" th:value="${gen}" th:text="${gen}">Género</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none"></i>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Fila: Precio y Stock -->
-                        <div class="grid grid-cols-2 gap-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-gray-300 mb-2">Precio (S/) *</label>
-                                <input type="number" 
-                                       th:field="*{precio}" 
-                                       step="0.01" 
-                                       min="0"
-                                       required
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <label for="precio" class="block text-sm font-medium text-gray-300 mb-2">Precio (S/) *</label>
+                                <div class="relative">
+                                    <i data-lucide="dollar-sign" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <input type="number" id="precio" th:field="*{precio}" step="0.01" min="0" required class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                </div>
                             </div>
                             <div>
-                                <label class="block text-gray-300 mb-2">Stock *</label>
-                                <input type="number" 
-                                       th:field="*{stock}" 
-                                       min="0"
-                                       required
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <label for="stock" class="block text-sm font-medium text-gray-300 mb-2">Stock *</label>
+                                <div class="relative">
+                                    <i data-lucide="layers" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <input type="number" id="stock" th:field="*{stock}" min="0" required class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Fila: Talla, Color y Marca -->
-                        <div class="grid grid-cols-3 gap-6 mb-6">
+                        <!-- Fila: Talla y Color -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-gray-300 mb-2">Talla</label>
-                                <input type="text" 
-                                       th:field="*{talla}" 
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <label for="talla" class="block text-sm font-medium text-gray-300 mb-2">Talla</label>
+                                <div class="relative">
+                                    <i data-lucide="ruler" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <input type="text" id="talla" th:field="*{talla}" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                </div>
                             </div>
                             <div>
-                                <label class="block text-gray-300 mb-2">Color</label>
-                                <input type="text" 
-                                       th:field="*{color}" 
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 mb-2">Marca</label>
-                                <input type="text" 
-                                       th:field="*{marca}" 
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <label for="color" class="block text-sm font-medium text-gray-300 mb-2">Color</label>
+                                <div class="relative">
+                                    <i data-lucide="palette" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <input type="text" id="color" th:field="*{color}" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                </div>
                             </div>
                         </div>
 
                         <!-- URL Imagen -->
-                        <div class="mb-6">
-                            <label class="block text-gray-300 mb-2">URL de la Imagen</label>
-                            <input type="text" 
-                                   th:field="*{imagenUrl}" 
-                                   class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <p class="text-gray-500 text-sm mt-1">Si no se especifica, se usará la imagen por defecto</p>
+                        <div>
+                            <label for="imagenUrl" class="block text-sm font-medium text-gray-300 mb-2">URL de la Imagen</label>
+                            <div class="relative">
+                                <i data-lucide="image" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                <input type="text" id="imagenUrl" th:field="*{imagenUrl}" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                            </div>
+                            <p class="text-gray-500 text-xs mt-2">Si este campo se deja vacío, se utilizará una imagen predeterminada.</p>
                         </div>
 
                         <!-- Botones -->
-                        <div class="flex space-x-4">
-                            <button type="submit" 
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition font-semibold">
-                                💾 Guardar
-                            </button>
-                            <a href="/admin/productos" 
-                               class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg transition">
-                                ❌ Cancelar
+                        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-4 pt-6 border-t border-gray-700/50">
+                            <a href="/admin/productos" class="w-full sm:w-auto text-center bg-gray-700/50 hover:bg-gray-600/50 text-white px-6 py-3 rounded-lg transition-colors">
+                                Cancelar
                             </a>
+                            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-semibold shadow-lg shadow-blue-600/20">
+                                <i data-lucide="save" class="size-5"></i>
+                                Guardar Producto
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -143,5 +147,10 @@
         </main>
     </div>
 
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Scripts del sidebar-->
+    <div th:replace="~{fragments/navbar :: sidebar-scripts}"></div>
 </body>
 </html>

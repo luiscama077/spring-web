@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
+
+    <div th:replace="~{fragments/navbar :: navbar-empleado}"></div>
+
+    <div class="flex">
+        <div th:replace="~{fragments/navbar :: sidebar-empleado(seccion='pos' )}"></div>
+        <div th:replace="~{fragments/navbar :: sidebar-overlay}"></div>
+
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+            <div class="max-w-6xl mx-auto">
+                
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-white">Punto de Venta (POS)</h2>
+                    <p class="text-gray-400 mt-1">Registra una nueva venta en tienda.</p>
+                </div>
+
+                <div th:if="${mensaje}" th:classappend="${tipo == 'success' ? 'bg-green-500/10 border-green-500/50 text-green-400' : 'bg-red-500/10 border-red-500/50 text-red-400'}" class="border px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
+                    <i th:if="${tipo == 'success'}" data-lucide="check-circle" class="size-5"></i>
+                    <i th:if="${tipo != 'success'}" data-lucide="alert-circle" class="size-5"></i>
+                    <p th:text="${mensaje}" class="text-sm"></p>
+                </div>
+
+                <form id="form-venta" th:action="@{/empleado/pos/finalizar-venta}" method="post">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        
+                        <!-- Columna Izquierda: Búsqueda y Carrito -->
+                        <div class="lg:col-span-2 space-y-8">
+                            <!-- Búsqueda de Productos -->
+                            <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700/50">
+                                <label for="buscar-producto" class="block text-lg font-semibold text-white mb-3">1. Buscar Productos</label>
+                                <div class="relative">
+                                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <input type="text" id="buscar-producto" placeholder="Escribe el nombre del producto..." class="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                                </div>
+                                <div id="resultados-productos" class="mt-2 max-h-60 overflow-y-auto"></div>
+                            </div>
+
+                            <!-- Carrito de Venta -->
+                            <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 overflow-x-auto">
+                                <h3 class="text-lg font-semibold text-white mb-4">Carrito de Venta</h3>
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr class="border-b border-gray-700">
+                                            <th class="p-2">Producto</th>
+                                            <th class="p-2 w-24 text-center">Cantidad</th>
+                                            <th class="p-2 w-32 text-right">Subtotal</th>
+                                            <th class="p-2 w-12 text-center"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="carrito-body">
+                                        <!-- Los productos se añadirán aquí con JS -->
+                                        <tr id="fila-vacia">
+                                            <td colspan="4" class="text-center text-gray-500 py-8">El carrito está vacío</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha: Cliente y Finalizar -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 sticky top-24 space-y-6">
+                                <!-- Búsqueda de Cliente -->
+                                <div>
+                                    <label for="buscar-cliente" class="block text-lg font-semibold text-white mb-3">2. Seleccionar Cliente</label>
+                                    <div class="relative">
+                                        <i data-lucide="user-search" class="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                        <input type="text" id="buscar-cliente" placeholder="Nombre o DNI del cliente..." class="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        <input type="hidden" name="clienteId" id="clienteId" required>
+                                    </div>
+                                    <div id="resultados-clientes" class="mt-2 max-h-40 overflow-y-auto"></div>
+                                    <div id="cliente-seleccionado" class="mt-3 hidden items-center gap-3 bg-green-900/50 p-3 rounded-lg">
+                                        <i data-lucide="user-check" class="size-5 text-green-400"></i>
+                                        <span id="nombre-cliente-seleccionado" class="font-semibold"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Resumen y Botón Finalizar -->
+                                <div>
+                                    <h3 class="text-lg font-semibold text-white mb-3">3. Finalizar Venta</h3>
+                                    <div class="flex justify-between items-center text-2xl font-bold">
+                                        <span>TOTAL:</span>
+                                        <span id="total-venta" class="text-green-400">S/ 0.00</span>
+                                    </div>
+                                    <button type="submit" id="btn-finalizar" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-4 rounded-lg transition flex items-center justify-center gap-2 disabled:bg-gray-600 disabled:cursor-not-allowed" disabled>
+                                        <i data-lucide="check-circle" class="inline size-6"></i>
+                                        <span>REGISTRAR VENTA</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+    
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/navbar :: sidebar-scripts}"></div>
+
+    <!-- ================== SCRIPT DEL POS ================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const buscarProductoInput = document.getElementById('buscar-producto');
+            const resultadosProductosDiv = document.getElementById('resultados-productos');
+            const buscarClienteInput = document.getElementById('buscar-cliente');
+            const resultadosClientesDiv = document.getElementById('resultados-clientes');
+            const clienteSeleccionadoDiv = document.getElementById('cliente-seleccionado');
+            const nombreClienteSeleccionadoSpan = document.getElementById('nombre-cliente-seleccionado');
+            const clienteIdInput = document.getElementById('clienteId');
+            const carritoBody = document.getElementById('carrito-body');
+            const filaVacia = document.getElementById('fila-vacia');
+            const totalVentaSpan = document.getElementById('total-venta');
+            const btnFinalizar = document.getElementById('btn-finalizar');
+            const formVenta = document.getElementById('form-venta');
+
+            let carrito = [];
+
+            // --- LÓGICA DE BÚSQUEDA DE PRODUCTOS ---
+			buscarProductoInput.addEventListener('keyup', function() {
+                const termino = this.value;
+                if (termino.length < 2) {
+                    resultadosProductosDiv.innerHTML = '';
+                    return;
+                }
+                fetch(`/empleado/pos/buscar-productos?termino=${termino}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        resultadosProductosDiv.innerHTML = '';
+                        data.forEach(producto => {
+                            const div = document.createElement('div');
+                            div.className = 'p-3 hover:bg-gray-700 cursor-pointer rounded-lg';
+                            
+                            // 1. Verificamos si el precio existe y es un número. Si no, usamos 0.00.
+                            const precioValido = (typeof producto.precio === 'number') ? producto.precio : 0.00;
+                            
+                            // 2. Usamos el precio validado para mostrarlo.
+                            div.innerHTML = `<p class="font-semibold">${producto.nombre}</p>
+											<p class="text-sm text-gray-400">Stock: ${producto.stock || 0} | S/ ${precioValido.toFixed(2)} | T: ${producto.talla}</p>
+											<p class="text-sm text-gray-400">Color: ${producto.color}</p>`;
+
+                            div.onclick = () => agregarAlCarrito(producto);
+                            resultadosProductosDiv.appendChild(div);
+                        });
+                    });
+            });
+
+            // --- LÓGICA DE BÚSQUEDA DE CLIENTES ---
+            buscarClienteInput.addEventListener('keyup', function() {
+                const termino = this.value;
+                if (termino.length < 2) {
+                    resultadosClientesDiv.innerHTML = '';
+                    return;
+                }
+                fetch(`/empleado/pos/buscar-clientes?termino=${termino}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        resultadosClientesDiv.innerHTML = '';
+                        data.forEach(cliente => {
+                            const div = document.createElement('div');
+                            div.className = 'p-3 hover:bg-gray-700 cursor-pointer rounded-lg';
+                            div.innerHTML = `<p class="font-semibold">${cliente.nombreCompleto}</p><p class="text-sm text-gray-400">${cliente.dni || 'Sin DNI'}</p>`;
+                            div.onclick = () => seleccionarCliente(cliente);
+                            resultadosClientesDiv.appendChild(div);
+                        });
+                    });
+            });
+
+            function seleccionarCliente(cliente) {
+                clienteIdInput.value = cliente.id;
+                nombreClienteSeleccionadoSpan.textContent = cliente.nombreCompleto;
+                clienteSeleccionadoDiv.classList.remove('hidden');
+                clienteSeleccionadoDiv.classList.add('flex');
+                buscarClienteInput.value = '';
+                resultadosClientesDiv.innerHTML = '';
+                validarFormulario();
+            }
+
+            function agregarAlCarrito(producto) {
+				const precioNumerico = (typeof producto.precio === 'number') ? producto.precio : 0.00;
+
+                const existente = carrito.find(item => item.id === producto.id);
+                if (existente) {
+                    if (existente.cantidad < producto.stock) existente.cantidad++;
+                } else {
+                    carrito.push({ ...producto, precio: precioNumerico, cantidad: 1 });
+                }
+                buscarProductoInput.value = '';
+                resultadosProductosDiv.innerHTML = '';
+                renderizarCarrito();
+            }
+
+            function renderizarCarrito() {
+                carritoBody.innerHTML = '';
+                if (carrito.length === 0) {
+                    carritoBody.appendChild(filaVacia);
+                } else {
+                    carrito.forEach((item, index) => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-gray-800';
+                        const subtotal = item.cantidad * item.precio;
+                        tr.innerHTML = `
+                            <td class="p-2">
+                                <p class="font-semibold">${item.nombre}</p>
+                                <input type="hidden" name="productoIds" value="${item.id}">
+                            </td>
+                            <td class="p-2">
+                                <input type="number" name="cantidades" value="${item.cantidad}" min="1" max="${item.stock}" class="w-20 text-center bg-gray-800 border border-gray-700 rounded-md py-1" data-index="${index}">
+                            </td>
+                            <td class="p-2 text-right font-semibold">S/ ${subtotal.toFixed(2)}</td>
+                            <td class="p-2 text-center">
+                                <button type="button" class="text-red-500 hover:text-red-400" data-index="${index}"><i data-lucide="trash-2" class="size-4"></i></button>
+                            </td>
+                        `;
+                        carritoBody.appendChild(tr);
+                    });
+                }
+                actualizarTotal();
+                validarFormulario();
+            }
+
+            carritoBody.addEventListener('change', function(e) {
+                if (e.target.type === 'number') {
+                    const index = e.target.dataset.index;
+                    let nuevaCantidad = parseInt(e.target.value);
+                    if (nuevaCantidad > carrito[index].stock) nuevaCantidad = carrito[index].stock;
+                    if (nuevaCantidad < 1) nuevaCantidad = 1;
+                    carrito[index].cantidad = nuevaCantidad;
+                    renderizarCarrito();
+                }
+            });
+
+            carritoBody.addEventListener('click', function(e) {
+                const button = e.target.closest('button');
+                if (button && button.dataset.index) {
+                    const index = button.dataset.index;
+                    carrito.splice(index, 1);
+                    renderizarCarrito();
+                }
+            });
+
+            function actualizarTotal() {
+                const total = carrito.reduce((sum, item) => sum + (item.cantidad * item.precio), 0);
+                totalVentaSpan.textContent = `S/ ${total.toFixed(2)}`;
+            }
+
+            function validarFormulario() {
+                const clienteValido = clienteIdInput.value !== '';
+                const carritoValido = carrito.length > 0;
+                btnFinalizar.disabled = !(clienteValido && carritoValido);
+            }
+
+            formVenta.addEventListener('submit', function(e) {
+                if (btnFinalizar.disabled) {
+                    e.preventDefault();
+                    alert('Debe seleccionar un cliente y añadir productos al carrito para poder registrar la venta.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

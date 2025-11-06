@@ -2,10 +2,11 @@ package com.estilounico.service;
 
 import com.estilounico.model.Categoria;
 import com.estilounico.model.Producto;
-import com.estilounico.model.enums.GeneroProducto;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ProductoService {
     
@@ -23,29 +24,22 @@ public interface ProductoService {
     
     List<Producto> listarPorCategoria(Categoria categoria);
     
-    List<Producto> listarPorCategoriaActivos(Categoria categoria);
-    
-    List<Producto> listarPorGenero(GeneroProducto genero);
-    
-    List<Producto> listarPorGeneroActivos(GeneroProducto genero);
-    
     List<Producto> buscarPorNombre(String nombre);
-    
-    List<Producto> buscarPorNombreActivos(String nombre);
-    
-    List<Producto> listarPorMarca(String marca);
-    
-    List<Producto> listarPorRangoPrecio(BigDecimal precioMin, BigDecimal precioMax);
     
     List<Producto> listarProductosConBajoStock(Integer cantidad);
     
-    List<Producto> listarProductosRecientes();
+    long contarProductosConBajoStock(int umbral);
     
     void activarDesactivar(Long id, Boolean activo);
     
     void actualizarStock(Long id, Integer nuevoStock);
     
-    void reducirStock(Long id, Integer cantidad);
+    List<Producto> buscarActivosConStockPorNombre(String termino);
+
+    List<Producto> listarUltimosProductos(int limit);
     
-    void aumentarStock(Long id, Integer cantidad);
+    List<Producto> listarMasVendidos(int limit);
+    
+    Page<Producto> listarConFiltros(Long categoriaId, String genero, String marca, Pageable pageable);
+
 }

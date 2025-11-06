@@ -1,138 +1,196 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/header :: head}"></head>
-<body class="bg-gray-900 min-h-screen">
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
     
     <!-- Navbar -->
     <div th:replace="~{fragments/navbar :: navbar-admin}"></div>
 
     <div class="flex">
         <!-- Sidebar -->
-        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='productos')}"></div>
+        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='productos'  )}"></div>
+
+        <!-- Overlay -->
+        <div th:replace="~{fragments/navbar :: sidebar-overlay}"></div>
 
         <!-- Main Content -->
-        <main class="flex-1 p-8">
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
             <div class="max-w-7xl mx-auto">
                 
                 <!-- Header -->
-                <div class="flex justify-between items-center mb-8">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
                     <div>
                         <h2 class="text-3xl font-bold text-white">Productos</h2>
                         <p class="text-gray-400 mt-1">Gestión del catálogo de productos</p>
                     </div>
-                    <a href="/admin/productos/nuevo" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
-                        ➕ Nuevo Producto
+                    <a href="/admin/productos/nuevo" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
+                        <i data-lucide="plus" class="inline size-5"></i>
+                        <span>Nuevo Producto</span>
                     </a>
                 </div>
 
                 <!-- Mensajes -->
                 <div th:if="${mensaje}" 
-                     th:classappend="${tipo == 'success' ? 'bg-green-900 border-green-700 text-green-200' : 'bg-red-900 border-red-700 text-red-200'}"
-                     class="border px-4 py-3 rounded mb-6">
-                    <p th:text="${mensaje}">Mensaje</p>
+                     th:classappend="${tipo == 'success' ? 'bg-green-500/10 border-green-500/50 text-green-400' : 'bg-red-500/10 border-red-500/50 text-red-400'}"
+                     class="border px-4 py-3 rounded-lg mb-6 backdrop-blur-sm flex items-center gap-3">
+                    <i th:if="${tipo == 'success'}" data-lucide="check-circle" class="size-5 flex-shrink-0"></i>
+                    <i th:if="${tipo != 'success'}" data-lucide="alert-circle" class="size-5 flex-shrink-0"></i>
+                    <p th:text="${mensaje}" class="text-sm">Mensaje</p>
                 </div>
 
                 <!-- Barra de búsqueda y filtros -->
-                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-6">
-                    <div class="flex flex-wrap gap-4">
-                        <form action="/admin/productos/buscar" method="get" class="flex-1">
-                            <div class="flex">
-                                <input type="text" 
-                                       name="termino" 
-                                       placeholder="Buscar producto..."
-                                       class="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-l-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-r-lg transition">
-                                    🔍 Buscar
-                                </button>
-                            </div>
-                        </form>
-                        <a href="/admin/productos/bajo-stock" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-lg transition">
-                            ⚠️ Bajo Stock
-                        </a>
-                        <a href="/admin/productos" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition">
-                            🔄 Ver Todos
-                        </a>
+                <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 mb-6 backdrop-blur-sm">
+                    <div class="flex flex-col lg:flex-row items-stretch gap-4">
+                        <!-- Búsqueda y Categoría -->
+                        <div class="w-full flex-grow flex flex-col sm:flex-row gap-4">
+                            <form th:action="@{/admin/productos/buscar}" method="get" class="flex-grow w-full">
+                                <div class="flex">
+                                    <input type="text" name="termino" th:value="${termino}" placeholder="Buscar por nombre"
+                                           class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-l-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                    <button type="submit" class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-r-lg transition-colors" title="Buscar">
+                                        <i data-lucide="search" class="size-5"></i>
+                                    </button>
+                                </div>
+                            </form>
+                            <form th:action="@{/admin/productos/categoria}" method="get" class="w-full sm:w-auto sm:min-w-[200px]">
+                                <div class="relative">
+                                    <i data-lucide="layout-grid" class="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400"></i>
+                                    <select name="id" onchange="this.form.submit()" class="w-full appearance-none pl-10 pr-8 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer">
+                                        <option value="">Todas las categorías</option>
+                                        <option th:each="categoria : ${categorias}" th:value="${categoria.id}" th:text="${categoria.nombre}" th:selected="${categoriaSeleccionada != null and categoriaSeleccionada.id == categoria.id}"></option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none"></i>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Botones de acción -->
+                        <div class="w-full lg:w-auto flex-shrink-0 flex flex-col sm:flex-row items-stretch gap-2">
+                            <a th:href="@{/admin/productos/bajo-stock}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-yellow-600/20 hover:bg-yellow-600 text-yellow-400 hover:text-white border border-yellow-500/30 hover:border-yellow-600 px-4 py-2.5 rounded-lg transition-all" title="Ver productos con stock bajo">
+                                <i data-lucide="alert-triangle" class="size-4"></i>
+                                <span>Bajo Stock</span>
+                            </a>
+                            <a th:href="@{/admin/productos}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gray-700/50 hover:bg-gray-600/50 text-white px-4 py-2.5 rounded-lg transition-colors" title="Limpiar filtros">
+                                <i data-lucide="rotate-cw" class="size-4"></i>
+                                <span>Limpiar</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
+                
+				<!-- Tabla de Productos -->
+				<div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+				    <div class="flex items-center justify-between mb-4">
+				        <div class="flex items-center gap-3">
+				            <div class="bg-blue-500/20 p-2 rounded-lg">
+				                <i data-lucide="package" class="inline size-5 text-blue-400"></i>
+				            </div>
+				            <h3 class="text-xl font-semibold text-white">Listado de Productos</h3>
+				        </div>
+				    </div>
+				    
+				    <!-- Contenedor de la lista de productos -->
+				    <div class="space-y-4">
+				        <!-- Mensaje cuando no hay productos -->
+				        <div th:if="${productos.empty}" class="text-center py-12">
+				            <i data-lucide="inbox" class="size-12 mx-auto text-gray-600 mb-3"></i>
+				            <h3 class="text-lg font-semibold text-white">No se encontraron productos</h3>
+				            <p class="mt-1 text-sm text-gray-400">Intenta ajustar los filtros o registrar un nuevo producto.</p>
+				        </div>
 
-                <!-- Tabla de Productos -->
-                <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-900">
-                                <tr class="text-left text-gray-400">
-                                    <th class="px-6 py-4">ID</th>
-                                    <th class="px-6 py-4">Nombre</th>
-                                    <th class="px-6 py-4">Categoría</th>
-                                    <th class="px-6 py-4">Precio</th>
-                                    <th class="px-6 py-4">Stock</th>
-                                    <th class="px-6 py-4">Talla</th>
-                                    <th class="px-6 py-4">Color</th>
-                                    <th class="px-6 py-4">Estado</th>
-                                    <th class="px-6 py-4">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-300">
-                                <tr th:if="${productos.empty}">
-                                    <td colspan="9" class="px-6 py-8 text-center text-gray-500">
-                                        No hay productos registrados
-                                    </td>
-                                </tr>
-                                <tr th:each="producto : ${productos}" class="border-t border-gray-700 hover:bg-gray-700">
-                                    <td class="px-6 py-4" th:text="${producto.id}">#1</td>
-                                    <td class="px-6 py-4">
-                                        <div>
-                                            <p class="font-semibold text-white" th:text="${producto.nombre}">Producto</p>
-                                            <p class="text-sm text-gray-400" th:text="${producto.marca}">Marca</p>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4" th:text="${producto.categoria.nombre}">Categoría</td>
-                                    <td class="px-6 py-4">
-                                        <span class="text-green-400 font-semibold">
-                                            S/ <span th:text="${#numbers.formatDecimal(producto.precio, 1, 2)}">0.00</span>
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span th:classappend="${producto.stock < 10 ? 'bg-red-900 text-red-200' : 'bg-green-900 text-green-200'}"
-                                              class="px-3 py-1 rounded text-sm font-semibold" 
-                                              th:text="${producto.stock}">0</span>
-                                    </td>
-                                    <td class="px-6 py-4" th:text="${producto.talla}">M</td>
-                                    <td class="px-6 py-4" th:text="${producto.color}">Negro</td>
-                                    <td class="px-6 py-4">
-                                        <span th:if="${producto.activo}" class="px-3 py-1 bg-green-900 text-green-200 rounded text-sm">
-                                            Activo
-                                        </span>
-                                        <span th:unless="${producto.activo}" class="px-3 py-1 bg-gray-700 text-gray-400 rounded text-sm">
-                                            Inactivo
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex space-x-2">
-                                            <a th:href="@{/admin/productos/editar/{id}(id=${producto.id})}" 
-                                               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition">
-                                                ✏️ Editar
-                                            </a>
-                                            <a th:href="@{/admin/productos/toggle/{id}(id=${producto.id})}" 
-                                               class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
-                                                🔄 Cambiar estado
-                                            </a>
-                                            <a th:href="@{/admin/productos/eliminar/{id}(id=${producto.id})}" 
-                                               onclick="return confirm('¿Estás seguro de eliminar este producto?')"
-                                               class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition">
-                                                🗑️ Eliminar
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+				        <!-- Fila de encabezado (visible solo en pantallas medianas en adelante) -->
+				        <div class="hidden md:grid md:grid-cols-12 md:gap-4 px-4 text-left text-gray-400 font-medium border-b border-gray-700/50 pb-3">
+				            <div class="col-span-3">Producto</div>
+				            <div class="col-span-2">Categoría</div>
+				            <div class="col-span-2">Precio</div>
+				            <div class="col-span-1">Stock</div>
+				            <div class="col-span-1">Estado</div>
+				            <div class="col-span-3 text-center">Acciones</div>
+				        </div>
+
+				        <!-- Lista de productos -->
+				        <div th:each="producto : ${productos}" 
+				             class="grid grid-cols-1 md:grid-cols-12 md:gap-4 items-center p-4 rounded-lg bg-gray-900/30 md:bg-transparent md:p-0 md:border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors gap-3 md:gap-0">
+				            
+				            <!-- Columna Producto -->
+				            <div class="md:col-span-3 md:py-4">
+				                <div class="flex items-start justify-between md:block">
+				                    <div>
+				                        <span class="md:hidden text-gray-400 font-semibold text-sm">Producto: </span>
+				                        <p class="font-semibold text-white inline md:block" th:text="${producto.nombre}">Producto</p>
+				                        <p class="text-sm text-gray-400" th:text="${producto.marca}">Marca</p>
+				                    </div>
+				                    <!-- Precio en móvil -->
+				                    <div class="md:hidden">
+				                        <span class="text-lg font-semibold text-green-400">S/ <span th:text="${#numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}">0.00</span></span>
+				                    </div>
+				                </div>
+				            </div>
+				            
+				            <!-- Columna Categoría -->
+				            <div class="md:col-span-2 md:py-4">
+				                <span class="md:hidden text-gray-400 font-semibold text-sm mr-2">Categoría:</span>
+				                <span class="text-gray-300" th:text="${producto.categoria.nombre}">Categoría</span>
+				            </div>
+				            
+				            <!-- Columna Precio (solo desktop) -->
+				            <div class="hidden md:block md:col-span-2 md:py-4">
+				                <span class="text-green-400 font-semibold">S/ <span th:text="${#numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}">0.00</span></span>
+				            </div>
+				            
+				            <!-- Columna Stock -->
+				            <div class="md:col-span-1 md:py-4">
+				                <span class="md:hidden text-gray-400 font-semibold text-sm mr-2">Stock:</span>
+				                <span th:classappend="${producto.stock < 10 ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-gray-500/20 text-gray-300 border-gray-500/30'}"
+				                      class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium border">
+				                    <i data-lucide="layers" class="size-3"></i>
+				                    <span th:text="${producto.stock}">0</span>
+				                </span>
+				            </div>
+				            
+				            <!-- Columna Estado -->
+				            <div class="md:col-span-1 md:py-4">
+				                <span class="md:hidden text-gray-400 font-semibold text-sm mr-2">Estado:</span>
+				                <span th:if="${producto.activo}" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium border border-green-500/30">
+				                    <span class="size-1.5 bg-green-400 rounded-full"></span> Activo
+				                </span>
+				                <span th:unless="${producto.activo}" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-700/50 text-gray-400 rounded-full text-xs font-medium border border-gray-600/30">
+				                    <span class="size-1.5 bg-gray-500 rounded-full"></span> Inactivo
+				                </span>
+				            </div>
+				            
+				            <!-- Columna Acciones -->
+				            <div class="md:col-span-3 md:py-4 flex justify-start md:justify-center gap-2 pt-3 md:pt-0 border-t border-gray-700/50 md:border-t-0">
+				                <a th:href="@{/admin/productos/editar/{id}(id=${producto.id})}" 
+				                   class="flex-1 md:flex-none bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/30 hover:border-blue-600 px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-center gap-2" 
+				                   title="Editar">
+				                    <i data-lucide="pencil" class="inline size-4"></i>
+				                    <span class="md:hidden">Editar</span>
+				                </a>
+				                <a th:href="@{/admin/productos/toggle/{id}(id=${producto.id})}" 
+				                   class="bg-yellow-600/20 hover:bg-yellow-600 text-yellow-400 hover:text-white border border-yellow-500/30 hover:border-yellow-600 px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-center" 
+				                   title="Cambiar estado">
+				                    <i data-lucide="refresh-cw" class="inline size-4"></i>
+				                </a>
+				                <a th:href="@{/admin/productos/eliminar/{id}(id=${producto.id})}" 
+				                   onclick="return confirm('¿Estás seguro de eliminar este producto?')" 
+				                   class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 hover:border-red-600 px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-center" 
+				                   title="Eliminar">
+				                    <i data-lucide="trash-2" class="inline size-4"></i>
+				                </a>
+				            </div>
+				        </div>
+				    </div>
+				</div>
 
             </div>
         </main>
     </div>
+    
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Scripts del sidebar-->
+    <div th:replace="~{fragments/navbar :: sidebar-scripts}"></div>
 
 </body>
 </html>

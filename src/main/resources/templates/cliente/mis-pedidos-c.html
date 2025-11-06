@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
+
+    <div th:replace="~{fragments/navbar :: navbar-cliente}"></div>
+
+    <main class="p-4 sm:p-6 lg:p-8">
+        <div class="max-w-4xl mx-auto">
+            
+            <div class="mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-white">Mis Pedidos</h1>
+                <p class="text-gray-400 mt-1">Aquí puedes ver el historial de todas tus compras.</p>
+            </div>
+
+            <!-- Mensajes de feedback -->
+            <div th:if="${mensaje}" 
+                 th:classappend="${tipo == 'success' ? 'bg-green-500/10 border-green-500/50 text-green-400' : 'bg-red-500/10 border-red-500/50 text-red-400'}"
+                 class="border px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
+                <i data-lucide="check-circle" class="size-5 flex-shrink-0"></i>
+                <p th:text="${mensaje}" class="text-sm"></p>
+            </div>
+
+            <div th:if="${#lists.isEmpty(pedidos )}" class="text-center py-20 bg-gray-800/50 rounded-xl border border-gray-700/50">
+                <i data-lucide="inbox" class="size-16 mx-auto text-gray-600 mb-4"></i>
+                <h2 class="text-2xl font-semibold text-white">Aún no tienes pedidos</h2>
+                <p class="text-gray-400 mt-2">¡Explora nuestro catálogo y haz tu primera compra!</p>
+                <a th:href="@{/cliente/productos}" class="mt-6 inline-block bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3 rounded-lg">
+                    Ir a la tienda
+                </a>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(pedidos)}" class="bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 space-y-4">
+                <div th:each="pedido : ${pedidos}" class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg bg-gray-900/50 hover:bg-gray-700/50 transition-colors">
+                    <div class="mb-4 sm:mb-0">
+                        <p class="font-bold text-white text-lg">Pedido #<span th:text="${pedido.id}"></span></p>
+                        <p class="text-sm text-gray-400">Realizado el: <span th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}"></span></p>
+                    </div>
+                    <div class="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
+                        <div class="text-center">
+                            <p class="text-gray-400 text-sm">Total</p>
+                            <p class="font-semibold text-green-400">S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 'COMMA', 2, 'POINT')}"></span></p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-400 text-sm">Estado</p>
+                            <span class="font-semibold capitalize"
+                                  th:text="${#strings.toLowerCase(#strings.replace(pedido.estado.name(), '_', ' '))}"
+                                  th:classappend="${#strings.toString(pedido.estado) == 'ENTREGADO' ? 'text-green-400' : (#strings.toString(pedido.estado) == 'CANCELADO' ? 'text-red-400' : 'text-yellow-400')}">
+                            </span>
+                        </div>
+                        <a th:href="@{/cliente/pedidos/detalle/{id}(id=${pedido.id})}" class="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/30 px-3 py-2 rounded-lg text-sm transition-all" title="Ver Detalle">
+                            <i data-lucide="eye" class="size-5"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

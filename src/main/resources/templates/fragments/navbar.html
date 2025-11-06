@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <body>
-    <!-- Navbar Admin -->
-    <nav th:fragment="navbar-admin" class="bg-gray-800 border-b border-gray-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
+    <!-- Navbar Admin (Header superior fijo) -->
+    <nav th:fragment="navbar-admin" class="bg-gray-800 border-b border-gray-700 z-50 h-16">
+        <div class="h-full px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-full">
                 <div class="flex items-center">
+                    <!-- Botón hamburguesa (solo móvil) -->
+                    <button id="open-sidebar" class="lg:hidden text-gray-300 hover:text-white mr-4 focus:outline-none">
+						<i data-lucide="menu" class="size-5 text-blue-400"></i>
+                    </button>
                     <h1 class="text-xl font-bold text-white">EstiloUnico</h1>
                     <span class="ml-4 px-3 py-1 bg-blue-600 text-white text-sm rounded-full">Admin</span>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span class="text-gray-300">Bienvenido, <span th:text="${session.username}">Admin</span></span>
+                    <span class="text-gray-300 hidden sm:inline">Bienvenido, <span th:text="${session.username}">Admin</span></span>
                     <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
                         Cerrar Sesión
                     </a>
@@ -20,45 +24,268 @@
     </nav>
 
     <!-- Sidebar Admin -->
-    <aside th:fragment="sidebar-admin" class="w-64 bg-gray-800 min-h-screen border-r border-gray-700">
-        <nav class="mt-6">
-            <a href="/admin/dashboard" 
+    <aside th:fragment="sidebar-admin" id="sidebar" 
+           class="fixed lg:sticky top-0 left-0 h-screen w-60 bg-gray-800 border-r border-gray-700 z-40 transition-transform duration-300 lg:translate-x-0 -translate-x-full overflow-y-auto flex-shrink-0">
+        
+	   <div class="lg:hidden flex items-center justify-between h-16 px-4 border-b border-gray-700">
+           <!-- Logo (visible solo en escritorio) -->
+           <div class="lg:flex items-center">
+               <h1 class="text-xl font-bold text-white">EstiloUnico</h1>
+               <span class="px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full">Admin</span>
+           </div>
+           
+           <!-- Botón de Cierre (X) - (visible solo en móvil) -->
+           <button id="close-sidebar" class="text-gray-400 hover:text-white focus:outline-none">
+               <span class="sr-only">Cerrar menú</span>
+               <!-- Icono de "X" de Lucide -->
+               <i data-lucide="x" class="size-6"></i>
+           </button>
+       </div>
+		   
+        <nav class="py-6 space-y-1">
+
+            <!-- Dashboard -->
+            <a href="/admin/dashboard"
                th:classappend="${seccion == 'dashboard' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
                class="flex items-center px-6 py-3 transition">
-                <span class="mr-3">📊</span>
+			   <i data-lucide="layout-dashboard" class="mr-3 size-5 text-blue-400"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="/admin/categorias" 
+
+            <!-- Categorías -->
+            <a href="/admin/categorias"
                th:classappend="${seccion == 'categorias' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
                class="flex items-center px-6 py-3 transition">
-                <span class="mr-3">📦</span>
-                <span>Categorías</span>
+			   <i data-lucide="boxes" class="mr-3 size-5 text-yellow-400"></i>
+               <span>Categorías</span>
             </a>
-            <a href="/admin/productos" 
+
+            <!-- Productos -->
+            <a href="/admin/productos"
                th:classappend="${seccion == 'productos' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
                class="flex items-center px-6 py-3 transition">
-                <span class="mr-3">🏷️</span>
+			   <i data-lucide="package" class="mr-3 size-5 text-red-400"></i>
                 <span>Productos</span>
             </a>
-            <a href="/admin/empleados" 
+
+            <!-- Empleados -->
+            <a href="/admin/empleados"
                th:classappend="${seccion == 'empleados' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
                class="flex items-center px-6 py-3 transition">
-                <span class="mr-3">👨‍💼</span>
-                <span>Empleados</span>
+			   <i data-lucide="user-cog" class="mr-3 size-5 text-purple-400"></i>
+               <span>Empleados</span>
             </a>
-            <a href="/admin/clientes" 
+
+            <!-- Clientes -->
+            <a href="/admin/clientes"
                th:classappend="${seccion == 'clientes' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
                class="flex items-center px-6 py-3 transition">
-                <span class="mr-3">👥</span>
-                <span>Clientes</span>
+			   <i data-lucide="users" class="mr-3 size-5 text-green-400"></i>
+               <span>Clientes</span>
             </a>
-            <a href="/admin/pedidos" 
+
+            <!-- Pedidos -->
+            <a href="/admin/pedidos"
                th:classappend="${seccion == 'pedidos' ? 'text-white bg-gray-900 border-l-4 border-blue-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
                class="flex items-center px-6 py-3 transition">
-                <span class="mr-3">📋</span>
-                <span>Pedidos</span>
+			   <i data-lucide="shopping-bag" class="mr-3 size-5 text-cyan-400"></i>
+               <span>Pedidos</span>
+            </a>
+
+        </nav>
+    </aside>
+
+	<!-- Navbar Empleado (Header superior fijo) -->
+    <nav th:fragment="navbar-empleado" class="bg-gray-800 border-b border-gray-700 z-50 h-16">
+        <div class="h-full px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-full">
+                <div class="flex items-center">
+                    <!-- Botón hamburguesa (solo móvil) -->
+                    <button id="open-sidebar" class="lg:hidden text-gray-300 hover:text-white mr-4 focus:outline-none">
+                        <i data-lucide="menu" class="size-5 text-green-400"></i>
+                    </button>
+                    <h1 class="text-xl font-bold text-white">EstiloUnico</h1>
+                    <span class="ml-4 px-3 py-1 bg-green-600 text-white text-sm rounded-full">Empleado</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-300 hidden sm:inline">Bienvenido, <span th:text="${session.username}">Empleado</span></span>
+                    <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                        Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Empleado -->
+    <aside th:fragment="sidebar-empleado" id="sidebar" 
+           class="fixed lg:sticky top-0 left-0 h-screen w-60 bg-gray-800 border-r border-gray-700 z-40 transition-transform duration-300 lg:translate-x-0 -translate-x-full overflow-y-auto flex-shrink-0">
+        
+       <div class="lg:hidden flex items-center justify-between h-16 px-4 border-b border-gray-700">
+           <div class="lg:flex items-center">
+               <h1 class="text-xl font-bold text-white">EstiloUnico</h1>
+               <span class="px-2 py-0.5 bg-green-600 text-white text-xs rounded-full">Empleado</span>
+           </div>
+           <button id="close-sidebar" class="text-gray-400 hover:text-white focus:outline-none">
+               <i data-lucide="x" class="size-6"></i>
+           </button>
+       </div>
+           
+        <nav class="py-6 space-y-1">
+            <!-- Dashboard -->
+            <a href="/empleado/dashboard"
+               th:classappend="${seccion == 'dashboard' ? 'text-white bg-gray-900 border-l-4 border-green-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+               class="flex items-center px-6 py-3 transition">
+               <i data-lucide="layout-dashboard" class="mr-3 size-5 text-green-400"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- Gestionar Pedidos -->
+            <a href="/empleado/pedidos"
+               th:classappend="${seccion == 'pedidos' ? 'text-white bg-gray-900 border-l-4 border-green-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+               class="flex items-center px-6 py-3 transition">
+               <i data-lucide="shopping-bag" class="mr-3 size-5 text-cyan-400"></i>
+               <span>Gestionar Pedidos</span>
+            </a>
+
+            <!-- Gestionar Inventario -->
+            <a href="/empleado/inventario"
+               th:classappend="${seccion == 'inventario' ? 'text-white bg-gray-900 border-l-4 border-green-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+               class="flex items-center px-6 py-3 transition">
+               <i data-lucide="package" class="mr-3 size-5 text-red-400"></i>
+                <span>Gestionar Inventario</span>
+            </a>
+
+            <!-- Punto de Venta (POS) -->
+            <a href="/empleado/pos"
+               th:classappend="${seccion == 'pos' ? 'text-white bg-gray-900 border-l-4 border-green-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+               class="flex items-center px-6 py-3 transition">
+               <i data-lucide="scan-line" class="mr-3 size-5 text-blue-400"></i>
+               <span>Punto de Venta</span>
+            </a>
+
+            <!-- Clientes -->
+            <a href="/empleado/clientes"
+               th:classappend="${seccion == 'clientes' ? 'text-white bg-gray-900 border-l-4 border-green-600' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+               class="flex items-center px-6 py-3 transition">
+               <i data-lucide="users" class="mr-3 size-5 text-purple-400"></i>
+               <span>Clientes</span>
             </a>
         </nav>
     </aside>
+	
+	<!-- Navbar Cliente (Header superior) - VERSIÓN CON MENÚ MÓVIL -->
+	<nav th:fragment="navbar-cliente" class="bg-gray-800/80 backdrop-blur-sm border-b border-gray-700/50 sticky top-0 z-50 h-16">
+	    <div class="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8">
+	        <div class="flex justify-between items-center h-full">
+	            
+	            <!-- Izquierda: Logo y Navegación Principal (Desktop) -->
+	            <div class="flex items-center gap-8">
+	                <a th:href="@{/cliente/home}" class="text-xl font-bold text-white flex-shrink-0">EstiloÚnico</a>
+	                <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+	                    <a th:href="@{/cliente/productos}" class="text-gray-300 hover:text-white transition-colors">Catálogo</a>
+	                    <a th:href="@{/cliente/mis-pedidos}" class="text-gray-300 hover:text-white transition-colors">Mis Pedidos</a>
+	                </div>
+	            </div>
+
+	            <!-- Derecha: Carrito, Perfil y Logout (Desktop) -->
+	            <div class="hidden md:flex items-center gap-4">
+	                <a th:href="@{/cliente/carrito}" class="relative text-gray-300 hover:text-white p-2 rounded-full hover:bg-gray-700 transition-colors" title="Ver Carrito">
+	                    <i data-lucide="shopping-cart" class="size-5"></i>
+	                </a>
+	                <a th:href="@{/cliente/perfil}" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+	                    <i data-lucide="user" class="size-5"></i>
+	                    <span class="text-sm" th:text="${session.username}"></span>
+	                </a>
+	                <a th:href="@{/logout}" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-sm transition-colors">Salir</a>
+	            </div>
+	            
+	            <!-- Botón de Menú Móvil (solo visible en móvil) -->
+	            <div class="md:hidden flex items-center">
+	                <a th:href="@{/cliente/carrito}" class="relative text-gray-300 hover:text-white p-2 rounded-full hover:bg-gray-700 transition-colors mr-2">
+	                    <i data-lucide="shopping-cart" class="size-5"></i>
+	                </a>
+	                <button id="mobile-menu-button" class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-gray-700 transition-colors">
+	                    <i data-lucide="menu" class="size-5"></i>
+	                </button>
+	            </div>
+	        </div>
+	    </div>
+
+	    <!-- Menú Desplegable Móvil -->
+	    <div id="mobile-menu" class="hidden md:hidden absolute top-16 left-0 w-full bg-gray-800 border-t border-gray-700">
+	        <div class="px-4 pt-2 pb-4 space-y-2">
+	            <a th:href="@{/cliente/home}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Inicio</a>
+	            <a th:href="@{/cliente/productos}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Catálogo</a>
+	            <a th:href="@{/cliente/mis-pedidos}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Mis Pedidos</a>
+	            <hr class="border-gray-700 my-2">
+	            <a th:href="@{/cliente/perfil}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Mi Perfil</a>
+	            <a th:href="@{/logout}" class="block px-3 py-2 rounded-md text-base font-medium text-red-400 hover:text-white hover:bg-red-600">Cerrar Sesión</a>
+	        </div>
+	    </div>
+	</nav>
+
+    <!-- Overlay para móvil -->
+    <div th:fragment="sidebar-overlay" id="sidebar-overlay" 
+         class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
+
+    <!-- Scripts para el sidebar -->
+	<script th:fragment="sidebar-scripts">
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const openBtn = document.getElementById('open-sidebar');
+			const closeBtn = document.getElementById('close-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (!sidebar || !openBtn || !closeBtn || !overlay) {
+                console.error('Elementos no encontrados');
+                return;
+            }
+            
+			// Función para abrir el sidebar
+		    function openSidebar() {
+		        sidebar.classList.remove('-translate-x-full');
+		        overlay.classList.remove('hidden');
+		        document.body.style.overflow = 'hidden';
+		    }
+		    
+		    // Función para cerrar el sidebar
+		    function closeSidebar() {
+		        sidebar.classList.add('-translate-x-full');
+		        overlay.classList.add('hidden');
+		        document.body.style.overflow = '';
+		    }
+		    
+		    // Eventos
+		    openBtn.addEventListener('click', openSidebar);
+		    closeBtn.addEventListener('click', closeSidebar); // <--- Nuevo evento
+		    overlay.addEventListener('click', closeSidebar);
+            
+            // Cerrar al hacer clic en un enlace (solo móvil)
+            const sidebarLinks = sidebar.querySelectorAll('a');
+            sidebarLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 1024) {
+                        closeSidebar();
+                    }
+                });
+            });
+        });
+    </script>
+	
+	
+	<!-- SIDEBAR CLIENTES -->
+	<script th:fragment="cliente-sidebar-scripts">
+		// Script para el menú móvil del cliente
+	    const mobileMenuButton = document.getElementById('mobile-menu-button');
+	    const mobileMenu = document.getElementById('mobile-menu');
+
+	    if (mobileMenuButton && mobileMenu) {
+	        mobileMenuButton.addEventListener('click', () => {
+	            mobileMenu.classList.toggle('hidden');
+	        });
+	    }
+	</script>
+
 </body>
 </html>

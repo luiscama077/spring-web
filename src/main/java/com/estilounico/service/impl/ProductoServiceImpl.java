@@ -6,11 +6,20 @@ import com.estilounico.model.enums.GeneroProducto;
 import com.estilounico.repository.ProductoRepository;
 import com.estilounico.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import jakarta.persistence.criteria.Predicate;
+
 
 @Service
 @Transactional
@@ -97,47 +106,8 @@ public class ProductoServiceImpl implements ProductoService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<Producto> listarPorCategoriaActivos(Categoria categoria) {
-        return productoRepository.findByCategoriaAndActivo(categoria, true);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<Producto> listarPorGenero(GeneroProducto genero) {
-        return productoRepository.findByGenero(genero);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<Producto> listarPorGeneroActivos(GeneroProducto genero) {
-        return productoRepository.findByGeneroAndActivo(genero, true);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<Producto> buscarPorNombre(String nombre) {
+    public List<Producto> buscarPorNombre(String nombre) { 
         return productoRepository.findByNombreContainingIgnoreCase(nombre);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<Producto> buscarPorNombreActivos(String nombre) {
-        return productoRepository.findByNombreContainingIgnoreCaseAndActivo(nombre, true);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<Producto> listarPorMarca(String marca) {
-        return productoRepository.findByMarca(marca);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<Producto> listarPorRangoPrecio(BigDecimal precioMin, BigDecimal precioMax) {
-        if (precioMin.compareTo(precioMax) > 0) {
-            throw new RuntimeException("El precio mínimo no puede ser mayor al precio máximo");
-        }
-        return productoRepository.findByPrecioBetweenAndActivo(precioMin, precioMax, true);
     }
     
     @Override
@@ -150,9 +120,8 @@ public class ProductoServiceImpl implements ProductoService {
     }
     
     @Override
-    @Transactional(readOnly = true)
-    public List<Producto> listarProductosRecientes() {
-        return productoRepository.findProductosRecientes();
+    public long contarProductosConBajoStock(int umbral) {
+        return productoRepository.countByStockLessThan(umbral);
     }
     
     @Override
@@ -164,6 +133,7 @@ public class ProductoServiceImpl implements ProductoService {
     }
     
     @Override
+    @Transactional
     public void actualizarStock(Long id, Integer nuevoStock) {
         if (nuevoStock < 0) {
             throw new RuntimeException("El stock no puede ser negativo");
@@ -176,34 +146,44 @@ public class ProductoServiceImpl implements ProductoService {
     }
     
     @Override
-    public void reducirStock(Long id, Integer cantidad) {
-        if (cantidad <= 0) {
-            throw new RuntimeException("La cantidad debe ser mayor a cero");
-        }
-        
-        Producto producto = productoRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
-        
-        Integer stockActual = producto.getStock();
-        
-        if (stockActual < cantidad) {
-            throw new RuntimeException("Stock insuficiente. Disponible: " + stockActual + ", Solicitado: " + cantidad);
-        }
-        
-        producto.setStock(stockActual - cantidad);
-        productoRepository.save(producto);
+    public List<Producto> buscarActivosConStockPorNombre(String termino) {
+        return productoRepository.findByNombreContainingAndActivoTrueAndStockGreaterThan(termino, 0);
     }
     
     @Override
-    public void aumentarStock(Long id, Integer cantidad) {
-        if (cantidad <= 0) {
-            throw new RuntimeException("La cantidad debe ser mayor a cero");
-        }
+    public List<Producto> listarUltimosProductos(int limit) {
+        // Creamos un objeto Pageable para limitar los resultados y ordenar por fecha de creación descendente
+        Pageable pageable = PageRequest.of(0, limit, Sort.by("fechaCreacion").descending());
+        return productoRepository.findAll(pageable).getContent();
+    }
+
+    @Override
+    public List<Producto> listarMasVendidos(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return productoRepository.findMasVendidos(pageable);
+    }
+    
+    @Override
+    public Page<Producto> listarConFiltros(Long categoriaId, String genero, String marca, Pageable pageable) {
+        Specification<Producto> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            
+            // Siempre filtramos por productos activos
+            predicates.add(criteriaBuilder.isTrue(root.get("activo")));
+            
+            if (categoriaId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("categoria").get("id"), categoriaId));
+            }
+            if (genero != null && !genero.isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("genero"), GeneroProducto.valueOf(genero.toUpperCase())));
+            }
+            if (marca != null && !marca.isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("marca"), "%" + marca + "%"));
+            }
+            
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
         
-        Producto producto = productoRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
-        
-        producto.setStock(producto.getStock() + cantidad);
-        productoRepository.save(producto);
+        return productoRepository.findAll(spec, pageable);
     }
 }

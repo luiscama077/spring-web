@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
+
+    <div th:replace="~{fragments/navbar :: navbar-cliente}"></div>
+
+    <main class="p-4 sm:p-6 lg:p-8">
+        <div class="max-w-4xl mx-auto">
+            
+            <div class="mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-white">Mi Carrito de Compras</h1>
+            </div>
+
+            <!-- Mensajes de feedback (éxito o error ) -->
+            <div th:if="${mensaje}" 
+                 th:classappend="${tipo == 'success' ? 'bg-green-500/10 border-green-500/50 text-green-400' : (tipo == 'info' ? 'bg-blue-500/10 border-blue-500/50 text-blue-400' : 'bg-red-500/10 border-red-500/50 text-red-400')}"
+                 class="border px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
+                <i th:if="${tipo == 'success'}" data-lucide="check-circle" class="size-5 flex-shrink-0"></i>
+                <i th:if="${tipo == 'info'}" data-lucide="info" class="size-5 flex-shrink-0"></i>
+                <i th:if="${tipo == 'error'}" data-lucide="alert-circle" class="size-5 flex-shrink-0"></i>
+                <p th:text="${mensaje}" class="text-sm"></p>
+            </div>
+
+            <!-- Carrito Vacío -->
+            <div th:if="${#lists.isEmpty(carritoItems)}" class="text-center py-20 bg-gray-800/50 rounded-xl border border-gray-700/50">
+                <i data-lucide="shopping-cart" class="size-16 mx-auto text-gray-600 mb-4"></i>
+                <h2 class="text-2xl font-semibold text-white">Tu carrito está vacío</h2>
+                <p class="text-gray-400 mt-2">Parece que aún no has añadido ningún producto.</p>
+                <a th:href="@{/cliente/productos}" class="mt-6 inline-block bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3 rounded-lg transition-transform hover:scale-105">
+                    Ir a la tienda
+                </a>
+            </div>
+
+            <!-- Carrito con Items -->
+            <div th:unless="${#lists.isEmpty(carritoItems)}" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Columna Izquierda: Lista de Productos -->
+                <div class="lg:col-span-2 bg-gray-800/50 p-6 rounded-xl border border-gray-700/50">
+                    <ul class="divide-y divide-gray-700">
+                        <li th:each="item : ${carritoItems}" class="flex flex-col sm:flex-row py-6">
+                            <div class="h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0 overflow-hidden rounded-md border border-gray-700 mx-auto sm:mx-0">
+                                <img th:src="${item.producto.imagenUrl ?: '/images/default-product.jpg'}" th:alt="${item.producto.nombre}" class="h-full w-full object-cover object-center">
+                            </div>
+                            <div class="ml-0 sm:ml-4 mt-4 sm:mt-0 flex flex-1 flex-col">
+                                <div>
+                                    <div class="flex justify-between text-base font-medium text-white">
+                                        <h3><a th:href="@{/cliente/productos/detalle/{id}(id=${item.producto.id})}" th:text="${item.producto.nombre}"></a></h3>
+                                        <p class="ml-4">S/ <span th:text="${#numbers.formatDecimal(item.producto.precio * item.cantidad, 1, 'COMMA', 2, 'POINT')}"></span></p>
+                                    </div>
+                                    <p class="mt-1 text-sm text-gray-400" th:text="${item.producto.marca}"></p>
+                                    <p class="mt-1 text-sm text-gray-400" th:text="${item.producto.precio}"></p>
+                                </div>
+                                <div class="flex flex-1 items-end justify-between text-sm mt-4">
+                                    
+                                    <!-- FORMULARIO DE ACTUALIZACIÓN -->
+                                    <form th:action="@{/cliente/carrito/actualizar}" method="post" class="flex items-center gap-2">
+                                        <input type="hidden" name="itemId" th:value="${item.id}" />
+                                        <label for="cantidad" class="text-gray-400">Cant:</label>
+                                        <input type="number" name="cantidad" th:value="${item.cantidad}" min="0" th:max="${item.producto.stock}"
+                                               class="w-16 text-center bg-gray-800 border border-gray-700 rounded-md py-1 focus:outline-none focus:ring-1 focus:ring-green-500">
+                                        <button type="submit" class="p-1 text-green-400 hover:text-green-300" title="Actualizar cantidad">
+                                            <i data-lucide="refresh-cw" class="size-4"></i>
+                                        </button>
+                                    </form>
+                                    
+                                    <div class="flex">
+                                        <a th:href="@{/cliente/carrito/eliminar/{id}(id=${item.id})}" class="font-medium text-red-500 hover:text-red-400 flex items-center gap-1">
+                                            <i data-lucide="trash-2" class="size-4"></i>
+                                            <span>Eliminar</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Columna Derecha: Resumen y Checkout (sin cambios) -->
+                <div class="lg:col-span-1">
+                    <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 sticky top-24">
+                        <h2 class="text-lg font-medium text-white">Resumen del Pedido</h2>
+                        <div class="mt-6 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400">Subtotal</span>
+                                <span class="font-medium text-white">S/ <span th:text="${#numbers.formatDecimal(totalCarrito, 1, 'COMMA', 2, 'POINT')}"></span></span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400">Envío</span>
+                                <span class="font-medium text-white">Por calcular</span>
+                            </div>
+                            <div class="border-t border-gray-700 pt-4 flex items-center justify-between text-base font-medium text-white">
+                                <p>Total</p>
+                                <p>S/ <span th:text="${#numbers.formatDecimal(totalCarrito, 1, 'COMMA', 2, 'POINT')}"></span></p>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <a th:href="@{/cliente/checkout}" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-lg transition flex items-center justify-center gap-2">
+                                Proceder al Pago
+                            </a>
+                        </div>
+                        <div class="mt-6 flex justify-center text-center text-sm text-gray-400">
+                            <p>o <a th:href="@{/cliente/productos}" class="font-medium text-green-400 hover:text-green-300">continuar comprando<span aria-hidden="true"> &rarr;</span></a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

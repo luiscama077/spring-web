@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/header :: head}"></head>
-<body class="bg-gray-900 min-h-screen">
-    
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
+
     <!-- Navbar -->
     <div th:replace="~{fragments/navbar :: navbar-admin}"></div>
 
     <div class="flex">
         <!-- Sidebar -->
-        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='dashboard')}"></div>
+        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='dashboard' )}"></div>
+
+        <!-- Overlay -->
+        <div th:replace="~{fragments/navbar :: sidebar-overlay}"></div>
 
         <!-- Main Content -->
-        <main class="flex-1 p-8">
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
             <div class="max-w-7xl mx-auto">
-                
+
                 <!-- Header -->
                 <div class="mb-8">
                     <h2 class="text-3xl font-bold text-white">Dashboard</h2>
@@ -21,123 +24,150 @@
                 </div>
 
                 <!-- Estadísticas Principales -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    
-                    <!-- Total Productos -->
-                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm hover:border-red-500/50 transition-all">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-400 text-sm">Total Productos</p>
+                                <p class="text-gray-400 text-sm font-medium">Total Productos</p>
                                 <p class="text-3xl font-bold text-white mt-2" th:text="${totalProductos}">0</p>
                             </div>
-                            <div class="bg-blue-600 rounded-full p-3">
-                                <span class="text-2xl">🏷️</span>
+                            <div class="bg-red-500/20 p-3 rounded-xl border border-red-500/30">
+                                <i data-lucide="package" class="inline size-8 text-red-400"></i>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Total Clientes -->
-                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm hover:border-green-500/50 transition-all">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-400 text-sm">Total Clientes</p>
+                                <p class="text-gray-400 text-sm font-medium">Total Clientes</p>
                                 <p class="text-3xl font-bold text-white mt-2" th:text="${totalClientes}">0</p>
                             </div>
-                            <div class="bg-green-600 rounded-full p-3">
-                                <span class="text-2xl">👥</span>
+                            <div class="bg-green-500/20 p-3 rounded-xl border border-green-500/30">
+                                <i data-lucide="users" class="inline size-8 text-green-400"></i>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Total Empleados -->
-                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm hover:border-purple-500/50 transition-all">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-400 text-sm">Total Empleados</p>
+                                <p class="text-gray-400 text-sm font-medium">Total Empleados</p>
                                 <p class="text-3xl font-bold text-white mt-2" th:text="${totalEmpleados}">0</p>
                             </div>
-                            <div class="bg-purple-600 rounded-full p-3">
-                                <span class="text-2xl">👨‍💼</span>
+                            <div class="bg-purple-500/20 p-3 rounded-xl border border-purple-500/30">
+                                <i data-lucide="user-cog" class="inline size-8 text-purple-400"></i>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Total Ventas -->
-                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm hover:border-blue-500/50 transition-all">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-400 text-sm">Total Ventas</p>
-                                <p class="text-3xl font-bold text-white mt-2">
+                                <p class="text-gray-400 text-sm font-medium">Total Ventas</p>
+                                <p class="text-2xl font-bold text-white mt-2">
                                     S/ <span th:text="${#numbers.formatDecimal(totalVentas, 1, 2)}">0</span>
                                 </p>
                             </div>
-                            <div class="bg-yellow-600 rounded-full p-3">
-                                <span class="text-2xl">💰</span>
+                            <div class="bg-blue-500/20 p-3 rounded-xl border border-blue-500/30">
+                                <i data-lucide="trending-up" class="inline size-8 text-blue-400"></i>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Pedidos por Estado -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    
-                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                        <p class="text-gray-400 text-sm mb-2">Pendientes</p>
-                        <p class="text-2xl font-bold text-yellow-500" th:text="${pedidosPendientes}">0</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-yellow-500/30 backdrop-blur-sm hover:shadow-lg hover:shadow-yellow-500/10 transition-all">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="bg-yellow-500/20 p-2 rounded-lg">
+                                <i data-lucide="clock" class="inline size-5 text-yellow-400"></i>
+                            </div>
+                            <p class="text-gray-400 text-sm font-medium">Pendientes</p>
+                        </div>
+                        <p class="text-3xl font-bold text-yellow-400" th:text="${pedidosPendientes}">0</p>
                     </div>
-
-                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                        <p class="text-gray-400 text-sm mb-2">En Proceso</p>
-                        <p class="text-2xl font-bold text-blue-500" th:text="${pedidosEnProceso}">0</p>
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-blue-500/30 backdrop-blur-sm hover:shadow-lg hover:shadow-blue-500/10 transition-all">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="bg-blue-500/20 p-2 rounded-lg">
+                                <i data-lucide="loader" class="inline size-5 text-blue-400"></i>
+                            </div>
+                            <p class="text-gray-400 text-sm font-medium">En Proceso</p>
+                        </div>
+                        <p class="text-3xl font-bold text-blue-400" th:text="${pedidosEnProceso}">0</p>
                     </div>
-
-                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                        <p class="text-gray-400 text-sm mb-2">Enviados</p>
-                        <p class="text-2xl font-bold text-purple-500" th:text="${pedidosEnviados}">0</p>
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-purple-500/30 backdrop-blur-sm hover:shadow-lg hover:shadow-purple-500/10 transition-all">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="bg-purple-500/20 p-2 rounded-lg">
+                                <i data-lucide="truck" class="inline size-5 text-purple-400"></i>
+                            </div>
+                            <p class="text-gray-400 text-sm font-medium">Enviados</p>
+                        </div>
+                        <p class="text-3xl font-bold text-purple-400" th:text="${pedidosEnviados}">0</p>
                     </div>
-
-                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                        <p class="text-gray-400 text-sm mb-2">Entregados</p>
-                        <p class="text-2xl font-bold text-green-500" th:text="${pedidosEntregados}">0</p>
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-green-500/30 backdrop-blur-sm hover:shadow-lg hover:shadow-green-500/10 transition-all">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="bg-green-500/20 p-2 rounded-lg">
+                                <i data-lucide="check-circle" class="inline size-5 text-green-400"></i>
+                            </div>
+                            <p class="text-gray-400 text-sm font-medium">Entregados</p>
+                        </div>
+                        <p class="text-3xl font-bold text-green-400" th:text="${pedidosEntregados}">0</p>
                     </div>
                 </div>
 
                 <!-- Sección de Alertas y Datos -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    
-                    <!-- Productos con Bajo Stock -->
-                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                        <h3 class="text-xl font-semibold text-white mb-4">⚠️ Productos con Bajo Stock</h3>
-                        <div class="space-y-3">
-                            <div th:if="${productosBajoStock.empty}" class="text-gray-400 text-sm">
-                                ✅ Todos los productos tienen stock suficiente
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-red-500/20 p-2 rounded-lg">
+                                <i data-lucide="alert-triangle" class="inline size-5 text-red-400"></i>
                             </div>
-                            <div th:each="producto : ${productosBajoStock}" class="flex justify-between items-center bg-gray-900 p-3 rounded">
+                            <h3 class="text-xl font-semibold text-white">Productos con Bajo Stock</h3>
+                        </div>
+                        <div class="space-y-3">
+                            <div th:if="${productosBajoStock.empty}" class="text-center py-8">
+                                <i data-lucide="check-circle-2" class="inline size-12 text-green-500/50 mb-3"></i>
+                                <p class="text-gray-400 text-sm">Todos los productos tienen stock suficiente</p>
+                            </div>
+                            <div th:each="producto : ${productosBajoStock}" class="flex justify-between items-center bg-gray-900/50 p-4 rounded-lg border border-gray-700/30 hover:border-red-500/30 transition-all">
                                 <div>
                                     <p class="text-white font-medium" th:text="${producto.nombre}">Producto X</p>
-                                    <p class="text-gray-400 text-sm" th:text="${producto.categoria.nombre}">Categoría</p>
+                                    <p class="text-gray-400 text-sm flex items-center gap-2 mt-1">
+                                        <i data-lucide="tag" class="inline size-3"></i>
+                                        <span th:text="${producto.categoria.nombre}">Categoría</span>
+                                    </p>
                                 </div>
-                                <span class="bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold" 
+                                <span class="bg-red-500/20 text-red-400 px-3 py-1.5 rounded-full text-sm font-semibold border border-red-500/30" 
                                       th:text="${producto.stock} + ' unidades'">0 unidades</span>
                             </div>
                         </div>
-                        <a href="/admin/productos/bajo-stock" class="block mt-4 text-blue-400 hover:text-blue-300 text-sm">
-                            Ver todos →
+                        <a href="/admin/productos/bajo-stock" class="flex items-center gap-2 mt-4 text-blue-400 hover:text-blue-300 text-sm transition-colors">
+                            <span>Ver todos</span>
+                            <i data-lucide="arrow-right" class="inline size-4"></i>
                         </a>
                     </div>
-
-                    <!-- Top Clientes -->
-                    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                        <h3 class="text-xl font-semibold text-white mb-4">🏆 Top Clientes</h3>
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-blue-500/20 p-2 rounded-lg">
+                                <i data-lucide="trophy" class="inline size-5 text-blue-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-white">Top Clientes</h3>
+                        </div>
                         <div class="space-y-3">
                             <div th:each="cliente, iter : ${topClientes}" th:if="${iter.index < 5}" 
-                                 class="flex justify-between items-center bg-gray-900 p-3 rounded">
-                                <div class="flex items-center">
-                                    <span class="text-2xl mr-3" th:text="${iter.index == 0 ? '🥇' : (iter.index == 1 ? '🥈' : (iter.index == 2 ? '🥉' : '🏅'))}">🥇</span>
+                                 class="flex justify-between items-center bg-gray-900/50 p-4 rounded-lg border border-gray-700/30 hover:border-blue-500/30 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <span class="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold"
+                                          th:classappend="${iter.index == 0 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : 
+                                                         (iter.index == 1 ? 'bg-gray-400/20 text-gray-400 border border-gray-400/30' : 
+                                                         (iter.index == 2 ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : 
+                                                         'bg-blue-500/20 text-blue-400 border border-blue-500/30'))}"
+                                          th:text="${iter.index + 1}">1</span>
                                     <div>
                                         <p class="text-white font-medium" th:text="${cliente.nombreCompleto}">Cliente</p>
-                                        <p class="text-gray-400 text-sm" 
-                                           th:text="${cliente.numeroPedidos} + ' pedidos'">0 pedidos</p>
+                                        <p class="text-gray-400 text-sm flex items-center gap-1.5" 
+                                           th:text="${cliente.numeroPedidos} + ' pedidos'">
+                                            <i data-lucide="shopping-bag" class="inline size-3"></i>
+                                            0 pedidos
+                                        </p>
                                     </div>
                                 </div>
                                 <span class="text-green-400 font-semibold">
@@ -145,60 +175,92 @@
                                 </span>
                             </div>
                         </div>
-                        <a href="/admin/clientes/top-compras" class="block mt-4 text-blue-400 hover:text-blue-300 text-sm">
-                            Ver todos →
+                        <a href="/admin/clientes/top-compras" class="flex items-center gap-2 mt-4 text-blue-400 hover:text-blue-300 text-sm transition-colors">
+                            <span>Ver todos</span>
+                            <i data-lucide="arrow-right" class="inline size-4"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Últimos Pedidos -->
-                <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
-                    <h3 class="text-xl font-semibold text-white mb-4">📦 Últimos Pedidos</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="text-left text-gray-400 border-b border-gray-700">
-                                    <th class="pb-3">ID</th>
-                                    <th class="pb-3">Cliente</th>
-                                    <th class="pb-3">Fecha</th>
-                                    <th class="pb-3">Total</th>
-                                    <th class="pb-3">Estado</th>
-                                    <th class="pb-3">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-300">
-                                <tr th:each="pedido, iter : ${ultimosPedidos}" th:if="${iter.index < 10}" 
-                                    class="border-b border-gray-700 hover:bg-gray-700">
-                                    <td class="py-3" th:text="${pedido.id}">#001</td>
-                                    <td class="py-3" th:text="${pedido.cliente.nombreCompleto}">Cliente</td>
-                                    <td class="py-3" th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
-                                    <td class="py-3">S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 2)}">0.00</span></td>
-                                    <td class="py-3">
-                                        <span class="px-3 py-1 rounded text-xs font-semibold"
-                                              th:classappend="${pedido.estado == T(com.estilounico.model.enums.EstadoPedido).PENDIENTE ? 'bg-yellow-900 text-yellow-300' : 
-                                                             (pedido.estado == T(com.estilounico.model.enums.EstadoPedido).EN_PROCESO ? 'bg-blue-900 text-blue-300' : 
-                                                             (pedido.estado == T(com.estilounico.model.enums.EstadoPedido).ENVIADO ? 'bg-purple-900 text-purple-300' : 
-                                                             (pedido.estado == T(com.estilounico.model.enums.EstadoPedido).ENTREGADO ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300')))}"
-                                              th:text="${pedido.estado}">PENDIENTE</span>
-                                    </td>
-                                    <td class="py-3">
-                                        <a th:href="@{/admin/pedidos/detalle/{id}(id=${pedido.id})}" 
-                                           class="text-blue-400 hover:text-blue-300 text-sm">
-                                            Ver detalle →
-                                        </a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="mt-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+                    <div class="flex items-center justify-between mb-4">
+                         <div class="flex items-center gap-3">
+                            <div class="bg-purple-500/20 p-2 rounded-lg">
+                                <i data-lucide="shopping-cart" class="inline size-5 text-purple-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-white">Últimos Pedidos</h3>
+                        </div>
+                        <a href="/admin/pedidos" class="hidden sm:flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm transition-colors">
+                            <span>Ver todos los pedidos</span>
+                            <i data-lucide="arrow-right" class="inline size-4"></i>
+                        </a>
                     </div>
-                    <a href="/admin/pedidos" class="block mt-4 text-blue-400 hover:text-blue-300 text-sm">
-                        Ver todos los pedidos →
+                    
+                    <!-- Contenedor de la lista de pedidos -->
+                    <div class="space-y-4">
+                        <!-- Fila de encabezado (visible solo en pantallas grandes) -->
+                        <div class="hidden md:grid md:grid-cols-6 md:gap-4 px-4 text-left text-gray-400 font-medium border-b border-gray-700/50 pb-3">
+                            <div>ID</div>
+                            <div>Cliente</div>
+                            <div>Fecha</div>
+                            <div>Total</div>
+                            <div>Estado</div>
+                            <div class="text-right">Acciones</div>
+                        </div>
+
+                        <!-- Lista de pedidos -->
+                        <div th:each="pedido, iter : ${ultimosPedidos}" th:if="${iter.index < 10}" 
+                             class="grid grid-cols-2 md:grid-cols-6 md:gap-4 items-center p-4 rounded-lg bg-gray-900/30 md:bg-transparent md:p-0 md:border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors">
+                            
+                            <!-- Columna ID -->
+                            <div class="md:py-4"><span class="md:hidden text-gray-400 font-semibold mr-2">ID:</span> <span th:text="${pedido.id}">#001</span></div>
+                            
+                            <!-- Columna Cliente -->
+                            <div class="md:py-4 col-span-2 md:col-span-1"><span class="md:hidden text-gray-400 font-semibold mr-2">Cliente:</span> <span th:text="${pedido.cliente.nombreCompleto}">Cliente</span></div>
+                            
+                            <!-- Columna Fecha -->
+                            <div class="md:py-4 text-gray-400"><span class="md:hidden text-gray-400 font-semibold mr-2">Fecha:</span> <span th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yy')}">01/01/25</span></div>
+                            
+                            <!-- Columna Total -->
+                            <div class="md:py-4 font-semibold"><span class="md:hidden text-gray-400 font-semibold mr-2">Total:</span> S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 2)}">0.00</span></div>
+                            
+                            <!-- Columna Estado -->
+                            <div class="md:py-4">
+                                <span class="px-3 py-1.5 rounded-full text-xs font-semibold border"
+                                      th:classappend="${pedido.estado.name() == 'PENDIENTE' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 
+                                                     (pedido.estado.name() == 'EN_PROCESO' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 
+                                                     (pedido.estado.name() == 'ENVIADO' ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : 
+                                                     (pedido.estado.name() == 'ENTREGADO' ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30')))}"
+                                      th:text="${pedido.estado}">PENDIENTE</span>
+                            </div>
+                            
+                            <!-- Columna Acciones -->
+                            <div class="md:py-4 col-span-2 md:col-span-1 flex justify-end">
+                                <a th:href="@{/admin/pedidos/detalle/{id}(id=${pedido.id})}" 
+                                   class="inline-flex items-center gap-1.5 text-blue-400 hover:text-blue-300 text-sm transition-colors">
+                                    <span>Ver detalle</span>
+                                    <i data-lucide="arrow-right" class="inline size-4"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="/admin/pedidos" class="sm:hidden flex items-center justify-center gap-2 mt-4 text-blue-400 hover:text-blue-300 text-sm transition-colors bg-gray-800/50 py-2 rounded-lg">
+                        <span>Ver todos los pedidos</span>
+                        <i data-lucide="arrow-right" class="inline size-4"></i>
                     </a>
                 </div>
 
             </div>
         </main>
     </div>
-
+    
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    
+    <!-- Scripts del sidebar-->
+    <div th:replace="~{fragments/navbar :: sidebar-scripts}"></div>
+    
 </body>
 </html>

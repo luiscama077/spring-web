@@ -1,9 +1,13 @@
 package com.estilounico.controller.admin;
 
+import com.estilounico.model.Categoria;
 import com.estilounico.model.Producto;
 import com.estilounico.model.enums.GeneroProducto;
 import com.estilounico.service.CategoriaService;
 import com.estilounico.service.ProductoService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,9 +28,10 @@ public class AdminProductoController {
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("productos", productoService.listarTodos());
+        model.addAttribute("categorias", categoriaService.listarTodas());
         return "admin/productos";
     }
-    
+      
     // Mostrar formulario para nuevo producto
     @GetMapping("/nuevo")
     public String mostrarFormularioNuevo(Model model) {
@@ -117,6 +122,7 @@ public class AdminProductoController {
     @GetMapping("/buscar")
     public String buscar(@RequestParam String termino, Model model) {
         model.addAttribute("productos", productoService.buscarPorNombre(termino));
+        model.addAttribute("categorias", categoriaService.listarTodas());
         model.addAttribute("termino", termino);
         return "admin/productos";
     }
@@ -125,7 +131,29 @@ public class AdminProductoController {
     @GetMapping("/bajo-stock")
     public String verBajoStock(Model model) {
         model.addAttribute("productos", productoService.listarProductosConBajoStock(10));
-        model.addAttribute("bajoStock", true);
+        model.addAttribute("categorias", categoriaService.listarTodas());
         return "admin/productos";
     }
+    
+ // Filtrar por categoría
+    @GetMapping("/categoria")
+    public String filtrarPorCategoria(@RequestParam(required = false) Long id, Model model) {
+    	List<Producto> productos;
+        Categoria categoriaSeleccionada = null;
+
+        if (id != null) {
+            categoriaSeleccionada = categoriaService.buscarPorId(id)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+            productos = productoService.listarPorCategoria(categoriaSeleccionada);
+        } else {
+            productos = productoService.listarTodos();
+        }
+
+        model.addAttribute("productos", productos);
+        model.addAttribute("categorias", categoriaService.listarTodas());
+        model.addAttribute("categoriaSeleccionada", categoriaSeleccionada);
+        
+        return "admin/productos";
+    }
+    
 }

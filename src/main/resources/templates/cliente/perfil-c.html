@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
+
+    <div th:replace="~{fragments/navbar :: navbar-cliente}"></div>
+
+    <main class="p-4 sm:p-6 lg:p-8">
+        <div class="max-w-4xl mx-auto">
+            
+            <div class="mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-white">Mi Perfil</h1>
+                <p class="text-gray-400 mt-1">Aquí puedes ver y actualizar tu información personal.</p>
+            </div>
+
+            <!-- Mensajes de feedback -->
+            <div th:if="${mensaje}" 
+                 th:classappend="${tipo == 'success' ? 'bg-green-500/10 border-green-500/50 text-green-400' : 'bg-red-500/10 border-red-500/50 text-red-400'}"
+                 class="border px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
+                <i data-lucide="check-circle" class="size-5 flex-shrink-0"></i>
+                <p th:text="${mensaje}" class="text-sm"></p>
+            </div>
+
+            <div class="bg-gray-800/50 p-6 sm:p-8 rounded-xl border border-gray-700/50">
+                <form th:action="@{/cliente/perfil/actualizar}" th:object="${cliente}" method="post" class="space-y-6">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Nombre Completo -->
+                        <div>
+                            <label for="nombreCompleto" class="block text-sm font-medium text-gray-400 mb-1">Nombre Completo</label>
+                            <input type="text" id="nombreCompleto" th:field="*{nombreCompleto}" class="w-full bg-gray-800 border border-gray-700 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <!-- DNI -->
+                        <div>
+                            <label for="dni" class="block text-sm font-medium text-gray-400 mb-1">DNI</label>
+                            <input type="text" id="dni" th:field="*{dni}" class="w-full bg-gray-800 border border-gray-700 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Email (solo lectura ) -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-400 mb-1">Email (No se puede cambiar)</label>
+                            <input type="email" id="email" th:field="*{usuario.email}" class="w-full bg-gray-900/50 border border-gray-700 rounded-md p-3 text-gray-500 cursor-not-allowed" readonly>
+                        </div>
+                        <!-- Teléfono -->
+                        <div>
+                            <label for="telefono" class="block text-sm font-medium text-gray-400 mb-1">Teléfono</-label>
+                            <input type="tel" id="telefono" th:field="*{telefono}" class="w-full bg-gray-800 border border-gray-700 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+
+                    <!-- Dirección Principal -->
+                    <div>
+                        <label for="direccionPrincipal" class="block text-sm font-medium text-gray-400 mb-1">Dirección Principal</label>
+                        <textarea id="direccionPrincipal" rows="3" th:field="*{direccionPrincipal}" class="w-full bg-gray-800 border border-gray-700 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                    </div>
+
+                    <!-- Botón de Guardar -->
+                    <div class="pt-4 text-right">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3 rounded-lg transition flex items-center gap-2 ml-auto">
+                            <i data-lucide="save" class="size-5"></i>
+                            <span>Guardar Cambios</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

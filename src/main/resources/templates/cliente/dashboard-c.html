@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
+
+    <div th:replace="~{fragments/navbar :: navbar-cliente}"></div>
+
+    <main class="p-4 sm:p-6 lg:p-8">
+        <div class="max-w-7xl mx-auto">
+            
+            <!-- Banner Principal -->
+            <div class="bg-gradient-to-r from-blue-700 to-darkblue-600 text-white p-8 sm:p-12 rounded-xl mb-12 text-center shadow-lg">
+                <h1 class="text-4xl sm:text-5xl font-extrabold mb-3">Bienvenido a EstiloÚnico</h1>
+                <p class="text-lg sm:text-xl max-w-2xl mx-auto">Descubre las últimas tendencias en moda y encuentra tu estilo perfecto.</p>
+                <a th:href="@{/cliente/productos}" class="mt-6 inline-block bg-white text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-gray-200 transition-transform hover:scale-105">
+                    Explorar Catálogo
+                </a>
+            </div>
+
+            <!-- Sección: Nuevos Productos -->
+            <section class="mb-12">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-purple-500/20 p-2 rounded-lg"><i data-lucide="sparkles" class="size-6 text-purple-400"></i></div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">Novedades</h2>
+                </div>
+                <div th:if="${nuevosProductos.empty}" class="text-center py-12 text-gray-500">
+                    <p>Pronto tendremos nuevos productos. ¡Vuelve a visitarnos!</p>
+                </div>
+                <div th:unless="${nuevosProductos.empty}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Tarjeta de Producto (reutilizable ) -->
+                    <div th:each="producto : ${nuevosProductos}" class="bg-gray-800/50 rounded-xl border border-gray-700/50 overflow-hidden group transition-all hover:shadow-2xl hover:border-green-500/50">
+                        <a th:href="@{/cliente/productos/detalle/{id}(id=${producto.id})}" class="block">
+                            <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden">
+                                <img th:src="${producto.imagenUrl ?: '/images/default-product.jpg'}" th:alt="${producto.nombre}" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300">
+                            </div>
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold text-white truncate" th:text="${producto.nombre}"></h3>
+                                <p class="text-sm text-gray-400 mb-2" th:text="${producto.marca}"></p>
+                                <p class="text-xl font-bold text-green-400">S/ <span th:text="${#numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}"></span></p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección: Más Vendidos -->
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-red-500/20 p-2 rounded-lg"><i data-lucide="flame" class="size-6 text-red-400"></i></div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">Más Vendidos</h2>
+                </div>
+                <div th:if="${masVendidos.empty}" class="text-center py-12 text-gray-500">
+                    <p>Aún no tenemos datos de los productos más vendidos.</p>
+                </div>
+                <div th:unless="${masVendidos.empty}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Tarjeta de Producto -->
+                    <div th:each="producto : ${masVendidos}" class="bg-gray-800/50 rounded-xl border border-gray-700/50 overflow-hidden group transition-all hover:shadow-2xl hover:border-green-500/50">
+                        <a th:href="@{/cliente/productos/detalle/{id}(id=${producto.id})}" class="block">
+                            <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden">
+                                <img th:src="${producto.imagenUrl ?: '/images/default-product.jpg'}" th:alt="${producto.nombre}" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300">
+                            </div>
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold text-white truncate" th:text="${producto.nombre}"></h3>
+                                <p class="text-sm text-gray-400 mb-2" th:text="${producto.marca}"></p>
+                                <p class="text-xl font-bold text-green-400">S/ <span th:text="${#numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}"></span></p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+    
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/navbar :: cliente-sidebar-scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen font-sans">
+    
+    <!-- Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar-admin}"></div>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/navbar :: sidebar-admin(seccion='empleados')}"></div>
+
+		<!-- Overlay -->
+		<div th:replace="~{fragments/navbar :: sidebar-overlay}"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto">
+                
+                <!-- Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-3xl font-bold text-white" th:text="${empleado.nombreCompleto}">Nombre del Empleado</h2>
+                            <p class="text-gray-400 mt-1">Perfil completo y actividad del empleado.</p>
+                        </div>
+                        <a href="/admin/empleados" class="inline-flex items-center gap-2 bg-gray-700/50 hover:bg-gray-600/50 text-white px-4 py-2 rounded-lg transition-colors">
+                            <i data-lucide="arrow-left" class="size-4"></i>
+                            <span>Volver a Empleados</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Columna Principal -->
+                    <div class="lg:col-span-2 space-y-6">
+                        
+                        <!-- Información Personal -->
+                        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+                            <h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                                <i data-lucide="user" class="size-5 text-blue-400"></i> Información Personal
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                                <div class="flex items-start gap-3">
+                                    <i data-lucide="user" class="size-4 text-gray-500 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-400">Nombre Completo</p>
+                                        <p class="text-white font-semibold" th:text="${empleado.nombreCompleto}">-</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <i data-lucide="credit-card" class="size-4 text-gray-500 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-400">DNI</p>
+                                        <p class="text-white" th:text="${empleado.dni ?: '-'}">-</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <i data-lucide="phone" class="size-4 text-gray-500 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-400">Teléfono</p>
+                                        <p class="text-white" th:text="${empleado.telefono ?: '-'}">-</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <i data-lucide="at-sign" class="size-4 text-gray-500 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-400">Usuario</p>
+                                        <p class="text-white" th:text="${empleado.usuario?.username ?: '-'}">-</p>
+                                    </div>
+                                </div>
+                                <div class="col-span-1 md:col-span-2 flex items-start gap-3">
+                                    <i data-lucide="mail" class="size-4 text-gray-500 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-400">Email</p>
+                                        <p class="text-white" th:text="${empleado.usuario?.email ?: '-'}">-</p>
+                                    </div>
+                                </div>
+                                <div class="col-span-1 md:col-span-2 flex items-start gap-3">
+                                    <i data-lucide="map-pin" class="size-4 text-gray-500 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-400">Dirección</p>
+                                        <p class="text-white" th:text="${empleado.direccion ?: '-'}">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información Laboral -->
+                        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+                            <h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                                <i data-lucide="briefcase" class="size-5 text-purple-400"></i> Información Laboral
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                                <div class="flex items-start gap-3">
+                                    <i data-lucide="badge" class="size-4 text-gray-500 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-400">Cargo</p>
+                                        <p class="text-white font-semibold" th:text="${empleado.cargo ?: '-'}">-</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <i data-lucide="calendar-check" class="size-4 text-gray-500 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-400">Fecha de Contratación</p>
+                                        <p class="text-white" th:text="${empleado.fechaContratacion != null ? #temporals.format(empleado.fechaContratacion, 'dd/MM/yyyy') : '-'}">-</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <i data-lucide="activity" class="size-4 text-gray-500 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-400">Estado Laboral</p>
+                                        <span class="inline-flex items-center gap-1.5 mt-1 px-3 py-1 rounded-full text-xs font-medium border"
+                                              th:classappend="${empleado.estadoLaboral?.name() == 'ACTIVO' ? 'bg-green-500/20 text-green-400 border-green-500/30' : 
+                                                             (empleado.estadoLaboral?.name() == 'VACACIONES' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 
+                                                             (empleado.estadoLaboral?.name() == 'SUSPENDIDO' ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-gray-500/20 text-gray-400 border-gray-500/30'))}">
+                                            <span class="size-1.5 rounded-full"
+                                                  th:classappend="${empleado.estadoLaboral?.name() == 'ACTIVO' ? 'bg-green-400' : 
+                                                                 (empleado.estadoLaboral?.name() == 'VACACIONES' ? 'bg-yellow-400' : 
+                                                                 (empleado.estadoLaboral?.name() == 'SUSPENDIDO' ? 'bg-red-400' : 'bg-gray-400'))}"></span>
+                                            <span th:text="${empleado.estadoLaboral ?: '-'}">-</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <i data-lucide="clock" class="size-4 text-gray-500 mt-0.5"></i>
+									<div>
+									    <p class="text-gray-400">Tiempo en la Empresa</p>
+									    
+									    <p class="text-white font-semibold">
+									        <th:block th:if="${empleado.fechaContratacion != null}">
+									            <th:block th:with="period=${T(java.time.Period).between(empleado.fechaContratacion, T(java.time.LocalDate).now())}">
+									                <!-- Muestra años si hay al menos 1 año -->
+									                <span th:if="${period.years > 0}" th:text="${period.years + ' año(s)'}"></span>
+									                <!-- Muestra meses si no hay años pero sí meses -->
+									                <span th:if="${period.years == 0 and period.months > 0}" th:text="${period.months + ' mes(es)'}"></span>
+									                <!-- Muestra días si no hay ni años ni meses (o es menos de un mes) -->
+									                <span th:if="${period.years == 0 and period.months == 0}" th:text="${period.days + ' día(s)'}"></span>
+
+									            </th:block>
+									        </th:block>
+									        <!-- Muestra un texto alternativo si la fecha no existe -->
+									        <span th:if="${empleado.fechaContratacion == null}">No disponible</span>
+									    </p>
+									</div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pedidos Procesados -->
+                        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+                            <h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                                <i data-lucide="package-check" class="size-5 text-blue-400"></i> Pedidos Procesados
+                            </h3>
+                            <div th:if="${pedidos == null || pedidos.empty}" class="text-center py-8 text-gray-500 flex flex-col items-center gap-3">
+                                <i data-lucide="inbox" class="size-10"></i>
+                                <p>Este empleado no ha procesado pedidos aún.</p>
+                            </div>
+                            <div th:unless="${pedidos == null || pedidos.empty}" class="space-y-3">
+                                <div th:each="pedido : ${pedidos}" class="bg-gray-800/60 rounded-lg p-4 border border-gray-700/50">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <p class="text-white font-semibold">Pedido #<span th:text="${pedido.id}">001</span></p>
+                                            <p class="text-sm text-gray-400">Cliente: <span th:text="${pedido.cliente?.nombreCompleto ?: '-'}">Cliente</span></p>
+                                            <p class="text-xs text-gray-500 mt-1" th:text="${pedido.fechaPedido != null ? #temporals.format(pedido.fechaPedido, 'dd MMM, yyyy HH:mm') : '-'}">01 Ene, 2025</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-green-400 font-semibold">S/ <span th:text="${pedido.total != null ? #numbers.formatDecimal(pedido.total, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span></p>
+                                            <span class="inline-flex items-center gap-1.5 mt-1 px-2.5 py-1 rounded-full text-xs font-medium border"
+                                                  th:classappend="${pedido.estado?.name() == 'PENDIENTE' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' : 
+                                                                 (pedido.estado?.name() == 'EN_PROCESO' ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 
+                                                                 (pedido.estado?.name() == 'ENVIADO' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 
+                                                                 (pedido.estado?.name() == 'ENTREGADO' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-red-500/20 text-red-300 border-red-500/30')))}"
+                                                  th:text="${pedido.estado ?: '-'}">ESTADO</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-end border-t border-gray-700/50 pt-2 mt-2">
+                                        <a th:href="@{/admin/pedidos/detalle/{id}(id=${pedido.id})}" class="text-blue-400 hover:text-blue-300 text-sm inline-flex items-center gap-1">
+                                            Ver detalle <i data-lucide="arrow-right" class="size-3"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Lateral -->
+                    <div class="space-y-6">
+                        <!-- Estadísticas -->
+                        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+                            <h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                                <i data-lucide="bar-chart-3" class="size-5 text-blue-400"></i> Estadísticas
+                            </h3>
+                            <div class="space-y-4 text-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Pedidos Procesados:</span>
+                                    <span class="font-semibold text-blue-400" th:text="${totalPedidos ?: 0}">0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Total Gestionado:</span>
+                                    <span class="font-semibold text-green-400">S/ <span th:text="${totalGestionado != null ? #numbers.formatDecimal(totalGestionado, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span></span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Promedio por Pedido:</span>
+                                    <span class="font-semibold text-purple-400" th:text="${(totalPedidos != null && totalPedidos > 0 && totalGestionado != null) ? 'S/ ' + #numbers.formatDecimal(totalGestionado / totalPedidos, 1, 'COMMA', 2, 'POINT') : 'S/ 0.00'}">S/ 0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cuenta -->
+                        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+                            <h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                                <i data-lucide="key-round" class="size-5 text-blue-400"></i> Cuenta
+                            </h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Estado:</span>
+                                    <span th:if="${empleado.usuario?.activo}" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium border border-green-500/30">
+                                        <span class="size-1.5 bg-green-400 rounded-full"></span> Activa
+                                    </span>
+                                    <span th:unless="${empleado.usuario?.activo}" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-medium border border-red-500/30">
+                                        <span class="size-1.5 bg-red-400 rounded-full"></span> Inactiva
+                                    </span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Rol:</span>
+                                    <span class="font-semibold text-white" th:text="${empleado.usuario?.rol ?: '-'}">-</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Registro:</span>
+                                    <span class="font-semibold text-white" th:text="${empleado.usuario?.fechaRegistro != null ? #temporals.format(empleado.usuario.fechaRegistro, 'dd MMM, yyyy') : '-'}">01 Ene, 2025</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">ID Usuario:</span>
+                                    <span class="font-semibold text-white" th:text="${empleado.usuario?.id ?: '-'}">1</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">ID Empleado:</span>
+                                    <span class="font-semibold text-white" th:text="${empleado.id ?: '-'}">1</span>
+                                </div>
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+	
+	<!-- Footer -->
+	<div th:replace="~{fragments/footer :: footer}"></div>
+
+	<!-- Scripts del sidebar-->
+	<div th:replace="~{fragments/navbar :: sidebar-scripts}"></div>
+</body>
+</html>

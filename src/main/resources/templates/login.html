@@ -4,19 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - EstiloUnico</title>
+	<script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 min-h-screen flex items-center justify-center">
+<body class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md px-6">
         <!-- Logo/Título -->
         <div class="text-center mb-8">
+			<i data-lucide="store" class="inline size-8 text-white"></i>
             <h1 class="text-4xl font-bold text-white mb-2">EstiloUnico</h1>
             <p class="text-gray-400">Sistema de Gestión de Tienda</p>
         </div>
 
         <!-- Formulario de Login -->
         <div class="bg-gray-800 rounded-lg shadow-xl p-8">
-            <h2 class="text-2xl font-semibold text-white mb-6">Iniciar Sesión</h2>
+            <h2 class="text-2xl font-semibold text-blue-400 mb-6">Iniciar Sesión</h2>
             
             <!-- Mensajes de error -->
             <div th:if="${error}" class="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-4">
@@ -68,14 +70,12 @@
             </form>
 
             <!-- Información de prueba -->
-            <div class="mt-6 pt-6 border-t border-gray-700">
-                <p class="text-gray-400 text-sm text-center mb-2">Credenciales de prueba:</p>
-                <div class="text-gray-500 text-xs space-y-1">
-                    <p>👨‍💼 Admin: <span class="text-gray-300">admin / 123456</span></p>
-                    <p>👔 Empleado: <span class="text-gray-300">empleado1 / 123456</span></p>
-                    <p>🛍️ Cliente: <span class="text-gray-300">cliente1 / 123456</span></p>
-                </div>
-            </div>
+			<div class="text-gray-500 text-xs space-y-1 pt-4">
+			  <p><i data-lucide="user-cog" class="inline size-5 text-gray-400"></i> Admin: <span class="text-gray-300">admin / 123</span></p>
+			  <p><i data-lucide="user-cog" class="inline size-5 text-red-400"></i> Empleado: <span class="text-gray-300">jperez / 123</span></p>
+			  <p><i data-lucide="user-cog" class="inline size-5 text-blue-400"></i> Cliente: <span class="text-gray-300">projas / 123</span></p>
+			</div>
+
         </div>
 
         <!-- Footer -->
@@ -83,5 +83,10 @@
             © 2025 EstiloUnico. Todos los derechos reservados.
         </p>
     </div>
+	
+	<script>
+	  lucide.createIcons();
+	</script>
+
 </body>
 </html>

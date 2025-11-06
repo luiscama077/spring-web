@@ -1,9 +1,18 @@
 package com.estilounico.controller.admin;
 
+import com.estilounico.model.Cliente;
+import com.estilounico.model.DetallePedido;
+import com.estilounico.model.Pedido;
+import com.estilounico.model.Producto;
 import com.estilounico.model.enums.EstadoPedido;
+import com.estilounico.service.ClienteService;
 import com.estilounico.service.DetallePedidoService;
 import com.estilounico.service.EmpleadoService;
 import com.estilounico.service.PedidoService;
+import com.estilounico.service.ProductoService;
+
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +31,12 @@ public class AdminPedidoController {
     
     @Autowired
     private EmpleadoService empleadoService;
+    
+    @Autowired
+    private ClienteService clienteService ;
+    
+    @Autowired
+    private ProductoService productoService ;
     
     // Listar todos los pedidos
     @GetMapping
@@ -64,7 +79,41 @@ public class AdminPedidoController {
                                @RequestParam EstadoPedido nuevoEstado,
                                RedirectAttributes redirectAttributes) {
         try {
+            
+            Pedido pedido = pedidoService.buscarPorIdConDetalles(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+            EstadoPedido estadoAnterior = pedido.getEstado();
+
+            // Si el nuevo estado es CANCELADO y el estado anterior NO era CANCELADO
+            // (para evitar restar múltiples veces si se cancela y se vuelve a cancelar)
+            if (nuevoEstado == EstadoPedido.CANCELADO && estadoAnterior != EstadoPedido.CANCELADO) {
+                
+                Cliente cliente = pedido.getCliente();
+                
+                // Restamos el total de la compra
+                BigDecimal nuevoTotalCompras = cliente.getTotalCompras().subtract(pedido.getTotal());
+                cliente.setTotalCompras(nuevoTotalCompras.max(BigDecimal.ZERO)); // Aseguramos que no sea negativo
+
+                // Decrementamos el número de pedidos
+                cliente.setNumeroPedidos(Math.max(0, cliente.getNumeroPedidos() - 1)); // Aseguramos que no sea negativo
+
+                if (cliente.getNumeroPedidos() <= 3) { // la regla que se usa
+                    cliente.setClienteFrecuente(false);
+                }
+                
+                clienteService.actualizar(cliente);
+                
+                // ADEMÁS: Devolver el stock de los productos del pedido cancelado
+                for (DetallePedido detalle : pedido.getDetalles()) {
+                    Producto producto = detalle.getProducto();
+                    producto.setStock(producto.getStock() + detalle.getCantidad());
+                    productoService.guardar(producto);
+                }
+            }
+            
             pedidoService.cambiarEstado(id, nuevoEstado);
+            
             redirectAttributes.addFlashAttribute("mensaje", "Estado actualizado exitosamente");
             redirectAttributes.addFlashAttribute("tipo", "success");
         } catch (Exception e) {

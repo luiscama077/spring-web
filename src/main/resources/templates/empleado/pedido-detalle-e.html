@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
+
+    <div th:replace="~{fragments/navbar :: navbar-empleado}"></div>
+
+    <div class="flex">
+        <div th:replace="~{fragments/navbar :: sidebar-empleado(seccion='pedidos' )}"></div>
+        <div th:replace="~{fragments/navbar :: sidebar-overlay}"></div>
+
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+            <div class="max-w-4xl mx-auto">
+                
+                <!-- Header y botón de volver -->
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white">Detalle del Pedido #<span th:text="${pedido.id}">1001</span></h2>
+                        <p class="text-gray-400 mt-1">Información completa del pedido y acciones.</p>
+                    </div>
+                    <a th:href="@{/empleado/pedidos}" class="w-full sm:w-auto bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-lg transition flex items-center justify-center gap-2">
+                        <i data-lucide="arrow-left" class="inline size-5"></i>
+                        <span>Volver a Pedidos</span>
+                    </a>
+                </div>
+
+                <!-- Mensajes de feedback -->
+                <div th:if="${mensaje}" 
+                     th:classappend="${tipo == 'success' ? 'bg-green-500/10 border-green-500/50 text-green-400' : 'bg-red-500/10 border-red-500/50 text-red-400'}"
+                     class="border px-4 py-3 rounded-lg mb-6 backdrop-blur-sm flex items-center gap-3">
+                    <i th:if="${tipo == 'success'}" data-lucide="check-circle" class="size-5"></i>
+                    <i th:if="${tipo != 'success'}" data-lucide="alert-circle" class="size-5"></i>
+                    <p th:text="${mensaje}" class="text-sm"></p>
+                </div>
+
+                <!-- Grid principal: Info y Acciones -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Columna Izquierda: Detalles del Pedido y Productos -->
+                    <div class="lg:col-span-2 space-y-8">
+                        <!-- Resumen del Pedido -->
+                        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+                            <h3 class="text-xl font-semibold text-white mb-4">Resumen</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="text-gray-400">Cliente:</p>
+                                    <p class="font-semibold text-white" th:text="${pedido.cliente.nombreCompleto}">Nombre Cliente</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Fecha del Pedido:</p>
+                                    <p class="font-semibold" th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">Fecha</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Dirección de Envío:</p>
+                                    <p class="font-semibold" th:text="${pedido.direccionEnvio}">Dirección</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Total del Pedido:</p>
+                                    <p class="font-bold text-green-400 text-lg">S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 'COMMA', 2, 'POINT')}">0.00</span></p>
+                                </div>
+								<div>
+                                    <p class="text-gray-400">Actualizado/procesado por:</p>
+                                    <p class="font-semibold" th:text="${pedido.empleadoProcesador.nombreCompleto}">Nombre</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Productos -->
+                        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+                            <h3 class="text-xl font-semibold text-white mb-4">Productos Incluidos</h3>
+                            <ul class="space-y-4">
+                                <li th:each="item : ${pedido.detalles}" class="flex items-center justify-between p-3 rounded-lg bg-gray-900/50">
+                                    <div>
+                                        <p class="font-semibold text-white" th:text="${item.producto.nombre}">Nombre Producto</p>
+                                        <p class="text-sm text-gray-400">
+                                            <span th:text="${item.cantidad}">1</span> x S/ <span th:text="${#numbers.formatDecimal(item.precioUnitario, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+                                        </p>
+                                    </div>
+                                    <p class="font-semibold text-white">S/ <span th:text="${#numbers.formatDecimal(item.subtotal, 1, 'COMMA', 2, 'POINT')}">0.00</span></p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Estado y Acciones -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 sticky top-24">
+                            <h3 class="text-xl font-semibold text-white mb-4">Estado y Acciones</h3>
+                            
+                            <!-- Estado Actual -->
+                            <div class="mb-6">
+                                <p class="text-gray-400 text-sm mb-1">Estado Actual:</p>
+                                <span th:text="${#strings.replace(pedido.estado.name(), '_', ' ')}"
+                                      th:classappend="${#strings.toString(pedido.estado) == 'PENDIENTE' ? 'bg-yellow-500/20 text-yellow-400' : 
+                                                       #strings.toString(pedido.estado) == 'EN_PROCESO' ? 'bg-blue-500/20 text-blue-400' :
+                                                       #strings.toString(pedido.estado) == 'ENVIADO' ? 'bg-purple-500/20 text-purple-400' :
+                                                       #strings.toString(pedido.estado) == 'ENTREGADO' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}"
+                                      class="w-full text-center inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold capitalize">
+                                </span>
+                            </div>
+
+                            <!-- Formulario para cambiar estado -->
+                            <form th:action="@{/empleado/pedidos/actualizar-estado}" method="post">
+                                <input type="hidden" name="pedidoId" th:value="${pedido.id}" />
+                                <label for="nuevoEstado" class="block text-gray-400 text-sm mb-2">Cambiar estado a:</label>
+                                <div class="relative">
+                                    <select id="nuevoEstado" name="nuevoEstado" class="w-full appearance-none px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition-all cursor-pointer">
+                                        <option th:each="estado : ${estadosPosibles}"
+                                                th:value="${estado}"
+                                                th:text="${#strings.replace(estado.name(), '_', ' ')}"
+                                                th:selected="${estado == pedido.estado}"
+                                                th:disabled="${estado == T(com.estilounico.model.enums.EstadoPedido).CANCELADO}">
+                                        </option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none"></i>
+                                </div>
+                                <button type="submit" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg transition flex items-center justify-center gap-2 shadow-lg shadow-green-600/20">
+                                    <i data-lucide="check-circle" class="inline size-5"></i>
+                                    <span>Actualizar Estado</span>
+                                </button>
+                            </form>
+                            
+                            <div class="mt-6 text-center text-sm text-gray-500" th:if="${pedido.empleadoProcesador != null}">
+                                <p>Procesado por: <span class="font-semibold text-gray-400" th:text="${pedido.empleadoProcesador.nombreCompleto}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/navbar :: sidebar-scripts}"></div>
+</body>
+</html>

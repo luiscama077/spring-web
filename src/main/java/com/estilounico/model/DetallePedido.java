@@ -32,12 +32,19 @@ public class DetallePedido {
     public DetallePedido() {
     }
     
-    public DetallePedido(Pedido pedido, Producto producto, Integer cantidad, BigDecimal precioUnitario) {
+    public DetallePedido(Pedido pedido, Producto producto, Integer cantidad) {
+        if (producto == null || producto.getPrecio() == null) {
+            throw new IllegalArgumentException("El producto y su precio no pueden ser nulos.");
+        }
+        if (cantidad == null || cantidad <= 0) {
+            throw new IllegalArgumentException("La cantidad debe ser un número positivo.");
+        }
+        
         this.pedido = pedido;
         this.producto = producto;
         this.cantidad = cantidad;
-        this.precioUnitario = precioUnitario;
-        this.subtotal = precioUnitario.multiply(new BigDecimal(cantidad));
+        this.precioUnitario = producto.getPrecio();
+        this.subtotal = this.precioUnitario.multiply(new BigDecimal(this.cantidad));
     }
     
     // Método para calcular subtotal
@@ -76,7 +83,6 @@ public class DetallePedido {
     
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
-        calcularSubtotal();
     }
     
     public BigDecimal getPrecioUnitario() {
@@ -85,7 +91,6 @@ public class DetallePedido {
     
     public void setPrecioUnitario(BigDecimal precioUnitario) {
         this.precioUnitario = precioUnitario;
-        calcularSubtotal();
     }
     
     public BigDecimal getSubtotal() {

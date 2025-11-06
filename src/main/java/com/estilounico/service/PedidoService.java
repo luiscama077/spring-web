@@ -5,21 +5,16 @@ import com.estilounico.model.Empleado;
 import com.estilounico.model.Pedido;
 import com.estilounico.model.enums.EstadoPedido;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface PedidoService {
     
-    Pedido guardar(Pedido pedido);
-    
-    Pedido actualizar(Pedido pedido);
-    
     void eliminar(Long id);
     
     Optional<Pedido> buscarPorId(Long id);
     
-    List<Pedido> listarTodos();
+    List<Pedido> listarTodos(); //e-p
     
     List<Pedido> listarTodosOrdenados();
     
@@ -33,15 +28,24 @@ public interface PedidoService {
     
     List<Pedido> listarPorEmpleado(Empleado empleado);
     
-    List<Pedido> listarPorPeriodo(LocalDateTime fechaInicio, LocalDateTime fechaFin);
+    List<Pedido> listarUltimosPedidos(int limit);
     
     Long contarPorEstado(EstadoPedido estado);
     
     BigDecimal calcularTotalVentas();
     
-    BigDecimal calcularVentasPorPeriodo(LocalDateTime fechaInicio, LocalDateTime fechaFin);
-    
     void cambiarEstado(Long id, EstadoPedido nuevoEstado);
     
     void asignarEmpleado(Long pedidoId, Long empleadoId);
+    
+    void actualizarEstadoYAsignarEmpleado(Long pedidoId, EstadoPedido nuevoEstado, Long empleadoId);
+
+    Long crearPedidoEnTienda(Long clienteId, List<Long> productoIds, List<Integer> cantidades, Long empleadoId);
+
+    void crearPedidoDesdeCarrito(Long clienteId, String direccionEnvio);
+    
+    List<Pedido> listarPorCliente(Long clienteId);
+
+    Optional<Pedido> buscarPorIdConDetalles(Long id);
+
 }

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/header :: head}"></head>
+<body class="bg-gray-900 min-h-screen font-sans text-gray-300">
+    
+    <div th:replace="~{fragments/navbar :: navbar-empleado}"></div>
+
+    <div class="flex">
+        <div th:replace="~{fragments/navbar :: sidebar-empleado(seccion='dashboard')}"></div>
+        <div th:replace="~{fragments/navbar :: sidebar-overlay}"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto">
+                
+                <!-- Header -->
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-white">Dashboard del Empleado</h2>
+                    <p class="text-gray-400 mt-1">Resumen de la actividad y accesos directos.</p>
+                </div>
+
+                <!-- Tarjetas de Resumen -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Pedidos Pendientes -->
+                    <a th:href="@{/empleado/pedidos(estado='PENDIENTE')}" class="bg-gray-800/50 border border-gray-700/50 rounded-xl p-6 hover:bg-gray-700/50 transition-all group">
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-medium text-white">Pedidos Pendientes</span>
+                            <div class="bg-yellow-500/20 p-2 rounded-lg">
+                                <i data-lucide="clock" class="size-6 text-yellow-400"></i>
+                            </div>
+                        </div>
+                        <p class="text-4xl font-bold text-yellow-400 mt-4" th:text="${pedidosPendientes}">0</p>
+                        <p class="text-sm text-gray-400 mt-1">Esperando ser procesados</p>
+                    </a>
+                    <!-- Pedidos en Proceso -->
+                    <a th:href="@{/empleado/pedidos(estado='EN_PROCESO')}" class="bg-gray-800/50 border border-gray-700/50 rounded-xl p-6 hover:bg-gray-700/50 transition-all group">
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-medium text-white">Pedidos en Proceso</span>
+                            <div class="bg-blue-500/20 p-2 rounded-lg">
+                                <i data-lucide="loader-2" class="size-6 text-blue-400 animate-spin"></i>
+                            </div>
+                        </div>
+                        <p class="text-4xl font-bold text-blue-400 mt-4" th:text="${pedidosEnProceso}">0</p>
+                        <p class="text-sm text-gray-400 mt-1">Siendo preparados para envío</p>
+                    </a>
+                    <!-- Productos Bajo Stock -->
+                    <a th:href="@{/empleado/inventario/bajo-stock}" class="bg-gray-800/50 border border-gray-700/50 rounded-xl p-6 hover:bg-gray-700/50 transition-all group">
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-medium text-white">Bajo Stock</span>
+                            <div class="bg-red-500/20 p-2 rounded-lg">
+                                <i data-lucide="alert-triangle" class="size-6 text-red-400"></i>
+                            </div>
+                        </div>
+                        <p class="text-4xl font-bold text-red-400 mt-4" th:text="${productosBajoStock}">0</p>
+                        <p class="text-sm text-gray-400 mt-1">Productos que necesitan reposición</p>
+                    </a>
+                </div>
+
+                <!-- Columnas de Listas Rápidas -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Últimos Pedidos Pendientes -->
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-purple-500/20 p-2 rounded-lg"><i data-lucide="shopping-cart" class="size-5 text-purple-400"></i></div>
+                            <h3 class="text-xl font-semibold text-white">Últimos Pedidos Recibidos</h3>
+                        </div>
+                        <div th:if="${ultimosPedidos.empty}" class="text-center py-8 text-gray-500">No hay pedidos recientes.</div>
+                        <ul th:unless="${ultimosPedidos.empty}" class="space-y-3">
+                            <li th:each="pedido : ${ultimosPedidos}" class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-700/50 transition-colors">
+                                <div>
+                                    <p class="font-semibold text-white">Pedido #<span th:text="${pedido.id}">1001</span></p>
+                                    <p class="text-sm text-gray-400" th:text="${pedido.cliente.nombreCompleto}">Cliente</p>
+                                </div>
+                                <a th:href="@{/empleado/pedidos/detalle/{id}(id=${pedido.id})}" class="bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-md text-sm font-semibold hover:bg-blue-600 hover:text-white transition-all">Ver</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Productos con Bajo Stock -->
+                    <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-red-500/20 p-2 rounded-lg"><i data-lucide="package-x" class="size-5 text-red-400"></i></div>
+                            <h3 class="text-xl font-semibold text-white">Productos con Bajo Stock</h3>
+                        </div>
+                        <div th:if="${listaBajoStock.empty}" class="text-center py-8 text-gray-500">No hay productos con bajo stock.</div>
+                        <ul th:unless="${listaBajoStock.empty}" class="space-y-3">
+                            <li th:each="producto : ${listaBajoStock}" class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-700/50 transition-colors">
+                                <div>
+                                    <p class="font-semibold text-white" th:text="${producto.nombre}">Producto</p>
+                                    <p class="text-sm text-gray-400" th:text="${producto.marca}">Marca</p>
+                                </div>
+                                <span class="bg-red-500/20 text-red-400 font-bold text-sm px-3 py-1.5 rounded-full" th:text="${producto.stock} + ' und.'">5</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/navbar :: sidebar-scripts}"></div>
+</body>
+</html>
