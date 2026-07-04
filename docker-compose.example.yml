@@ -1,0 +1,31 @@
+services:
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: TU_PASSWORD_ROOT
+      MYSQL_DATABASE: estilounico_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./bd-scripts/bd-estilo-unico.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: ghcr.io/usuarioghcr/estilounico:latest
+    restart: always
+    ports:
+      - "8081:8080"
+    environment:
+      JDBC_DATABASE_URL: jdbc:mysql://db:3306/estilounico_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      MYSQLUSER: root
+      MYSQLPASSWORD: TU_PASSWORD_ROOT
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

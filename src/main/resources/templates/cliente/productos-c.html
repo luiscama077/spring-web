@@ -31,7 +31,7 @@
 	                        <select onchange="window.location.href=this.value" class="w-full bg-gray-800 border border-gray-700 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500">
 	                            <option th:value="@{/cliente/productos(sort='fechaCreacion,desc')}" th:selected="${sort == 'fechaCreacion,desc'}">Más Nuevos</option>
 	                            <option th:value="@{/cliente/productos(sort='precio,asc')}" th:selected="${sort == 'precio,asc'}">Precio: Menor a Mayor</option>
-	                            <option th:value="@{/cliente/productos(sort='precio,desc')}" th:selected="${sort == 'precio,desc'}">Precio: Mayor a Mayor</option>
+	                            <option th:value="@{/cliente/productos(sort='precio,desc')}" th:selected="${sort == 'precio,desc'}">Precio: Mayor a Menor</option>
 	                        </select>
 	                    </div>
 	                    <a th:href="@{/cliente/productos}" class="w-full text-center block bg-gray-700 hover:bg-gray-600 p-2 rounded-md">Limpiar Filtros</a>

@@ -59,7 +59,7 @@
                                 </div>
 								<div>
                                     <p class="text-gray-400">Actualizado/procesado por:</p>
-                                    <p class="font-semibold" th:text="${pedido.empleadoProcesador.nombreCompleto}">Nombre</p>
+                                    <p class="font-semibold" th:text="${pedido.empleadoProcesador != null ? pedido.empleadoProcesador.nombreCompleto : 'Sin asignar'}">Nombre</p>
                                 </div>
                             </div>
                         </div>
